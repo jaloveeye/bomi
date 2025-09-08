@@ -1,8 +1,10 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Soft green theme for lower eye strain */
+  --background: #f0faef; /* mint milk */
+  --foreground: #0f2b1f; /* deep forest */
+  color-scheme: light;
 }
 
 @theme inline {
@@ -14,8 +16,9 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    /* Keep light scheme even when user prefers dark */
+    --background: #f0faef;
+    --foreground: #0f2b1f;
   }
 }
 
@@ -23,4 +26,29 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+  font-size: 18px;
+  line-height: 1.6;
+}
+
+::selection {
+  background: #ffe8b0;
+  color: #3b2f2f;
+}
+
+/* Improve legibility for large kid-friendly buttons */
+.kid-button {
+  color: #06120c; /* very dark green for high contrast */
+  font-weight: 800;
+  letter-spacing: 0.01em;
+  font-family: var(--font-kid), var(--font-geist-sans), Arial, Helvetica, sans-serif;
+  -webkit-text-stroke: 0;
+  text-shadow: none;
+}
+
+@media (prefers-color-scheme: dark) {
+  .kid-button {
+    color: #06120c !important;
+    -webkit-text-stroke: 0 !important;
+    text-shadow: none !important;
+  }
 }
