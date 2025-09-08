@@ -47,3 +47,105 @@ body {
     text-shadow: none !important;
   }
 }
+
+/* 애니메이션 키프레임 */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-10px) rotate(1deg);
+  }
+}
+
+@keyframes cardFloat1 {
+  0%, 100% {
+    transform: translateY(0px) rotate(12deg);
+  }
+  50% {
+    transform: translateY(-8px) rotate(15deg);
+  }
+}
+
+@keyframes cardFloat2 {
+  0%, 100% {
+    transform: translateY(0px) rotate(-12deg);
+  }
+  50% {
+    transform: translateY(-6px) rotate(-15deg);
+  }
+}
+
+@keyframes cardFloat3 {
+  0%, 100% {
+    transform: translateY(0px) rotate(6deg);
+  }
+  50% {
+    transform: translateY(-4px) rotate(9deg);
+  }
+}
+
+@keyframes mathFloat1 {
+  0%, 100% {
+    transform: translateY(0px) translateX(0px);
+  }
+  33% {
+    transform: translateY(-5px) translateX(3px);
+  }
+  66% {
+    transform: translateY(3px) translateX(-2px);
+  }
+}
+
+@keyframes mathFloat2 {
+  0%, 100% {
+    transform: translateY(0px) translateX(0px);
+  }
+  33% {
+    transform: translateY(3px) translateX(-3px);
+  }
+  66% {
+    transform: translateY(-4px) translateX(2px);
+  }
+}
+
+@keyframes mathFloat3 {
+  0%, 100% {
+    transform: translateY(0px) translateX(0px);
+  }
+  33% {
+    transform: translateY(-3px) translateX(2px);
+  }
+  66% {
+    transform: translateY(2px) translateX(-3px);
+  }
+}
+
+/* 애니메이션 클래스 */
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.animate-card-float-1 {
+  animation: cardFloat1 2.5s ease-in-out infinite;
+}
+
+.animate-card-float-2 {
+  animation: cardFloat2 2.8s ease-in-out infinite;
+}
+
+.animate-card-float-3 {
+  animation: cardFloat3 2.2s ease-in-out infinite;
+}
+
+.animate-math-float-1 {
+  animation: mathFloat1 4s ease-in-out infinite;
+}
+
+.animate-math-float-2 {
+  animation: mathFloat2 3.5s ease-in-out infinite;
+}
+
+.animate-math-float-3 {
+  animation: mathFloat3 4.2s ease-in-out infinite;
+}
