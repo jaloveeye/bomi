@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { GAME_CONFIG } from "../constants/game";
 
 type Problem = {
   a: number;
@@ -60,14 +61,13 @@ type PracticeGameProps = {
 
 export default function PracticeGame({ digits }: PracticeGameProps) {
   const [running, setRunning] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(30);
+  const [timeLeft, setTimeLeft] = useState<number>(GAME_CONFIG.TIMER_SECONDS);
   const [score, setScore] = useState(0);
   const [streak, setStreak] = useState(0);
   const [problem, setProblem] = useState<Problem>(() =>
     getDefaultProblem(digits)
   );
   const [feedback, setFeedback] = useState<null | "correct" | "wrong">(null);
-  const [emoji, setEmoji] = useState<string>("");
   const [voiceEnabled, setVoiceEnabled] = useState(true);
   const [options, setOptions] = useState<number[]>([]);
 
@@ -95,7 +95,6 @@ export default function PracticeGame({ digits }: PracticeGameProps) {
       const p = generateProblem(digits);
       setProblem(p);
       setFeedback(null);
-      setEmoji("");
       buildOptions(p);
     }
   }, [digits, running, buildOptions]);
@@ -131,6 +130,9 @@ export default function PracticeGame({ digits }: PracticeGameProps) {
         if (!synth) return;
         const utter = new SpeechSynthesisUtterance(text);
         utter.lang = "ko-KR";
+        utter.rate = 1.3; // 속도 증가 (기본값 1.0)
+        utter.pitch = 1.1; // 피치 약간 높임 (기본값 1.0)
+        utter.volume = 0.8; // 볼륨 조정 (기본값 1.0)
         synth.cancel();
         synth.speak(utter);
       } catch {
@@ -143,11 +145,10 @@ export default function PracticeGame({ digits }: PracticeGameProps) {
   const startGame = useCallback(() => {
     setScore(0);
     setStreak(0);
-    setTimeLeft(30);
+    setTimeLeft(GAME_CONFIG.TIMER_SECONDS);
     const p = generateProblem(digits);
     setProblem(p);
     setFeedback(null);
-    setEmoji("");
     buildOptions(p);
     setRunning(true);
   }, [digits, buildOptions]);
@@ -163,12 +164,6 @@ export default function PracticeGame({ digits }: PracticeGameProps) {
         setScore((s) => s + 1);
         setStreak(newStreak);
         setFeedback("correct");
-        if (newStreak >= 3) {
-          const emojis = ["🎉", "🌟", "👏", "💯", "🚀"];
-          setEmoji(emojis[getRandomInt(0, emojis.length - 1)]);
-        } else {
-          setEmoji("");
-        }
         say("정답!");
         const next = generateProblem(digits);
         setProblem(next);
@@ -185,7 +180,6 @@ export default function PracticeGame({ digits }: PracticeGameProps) {
         const next = generateProblem(digits);
         setProblem(next);
         buildOptions(next);
-        setEmoji("");
         setFeedback(null);
       }
     },
@@ -225,7 +219,7 @@ export default function PracticeGame({ digits }: PracticeGameProps) {
               className="h-14 px-8 rounded-full text-lg font-bold kid-button border border-black/10 bg-[#e7f7ea] active:scale-[.98]"
               onClick={startGame}
             >
-              시작하기 (60초)
+              {GAME_CONFIG.START_BUTTON_TEXT}
             </button>
           </div>
         ) : (
@@ -233,9 +227,6 @@ export default function PracticeGame({ digits }: PracticeGameProps) {
             <div className="flex items-center justify-center gap-3 py-6 rounded-xl bg-black/[.03] dark:bg-white/[.06]">
               <div className="text-6xl font-bold tabular-nums select-none">
                 {problem.a} {problem.op} {problem.b} =
-              </div>
-              <div className="text-5xl" aria-live="polite" aria-atomic>
-                {emoji}
               </div>
             </div>
 
