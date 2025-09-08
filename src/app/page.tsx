@@ -1,4 +1,5 @@
 import Link from "next/link";
+import ScoreList from "@/components/ScoreList";
 
 export default function Home() {
   return (
@@ -24,7 +25,7 @@ export default function Home() {
             2자리 덧셈·뺄셈
           </Link>
         </div>
-        
+
         <div className="mt-8">
           <h2 className="text-2xl md:text-3xl font-bold mb-6">구구단 연습</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -39,6 +40,8 @@ export default function Home() {
             ))}
           </div>
         </div>
+
+        <ScoreList />
       </main>
     </div>
   );

@@ -3,6 +3,15 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { GAME_CONFIG } from "../constants/game";
 
+type ScoreData = {
+  id: number;
+  name: string;
+  score: number;
+  gameType: string;
+  date: string;
+  timestamp: number;
+};
+
 type Problem = {
   a: number;
   b: number;
@@ -15,7 +24,7 @@ function getRandomInt(min: number, max: number) {
 }
 
 function getDigitRange(digits: number): [number, number] {
-  if (digits <= 1) return [0, 9];
+  if (digits <= 1) return [1, 9]; // 0 제외하고 1-9로 변경
   const min = Math.pow(10, digits - 1);
   const max = Math.pow(10, digits) - 1;
   return [min, max];
@@ -32,10 +41,10 @@ function generateProblem(digits: number): Problem {
     return { a, b, op: "+", answer: a + b };
   }
 
-  // subtraction: ensure non-negative result
+  // subtraction: ensure positive result (no zero)
   let a = getRandomInt(min, max);
   let b = getRandomInt(min, max);
-  if (b > a) [a, b] = [b, a];
+  if (b >= a) [a, b] = [b + 1, a]; // a > b가 되도록 보장하여 결과가 0이 되지 않도록 함
   return { a, b, op: "-", answer: a - b };
 }
 
@@ -65,7 +74,10 @@ type PracticeGameProps = {
   multiplicationTable?: number;
 };
 
-export default function PracticeGame({ digits, multiplicationTable }: PracticeGameProps) {
+export default function PracticeGame({
+  digits,
+  multiplicationTable,
+}: PracticeGameProps) {
   const [running, setRunning] = useState(false);
   const [timeLeft, setTimeLeft] = useState<number>(GAME_CONFIG.TIMER_SECONDS);
   const [score, setScore] = useState(0);
@@ -77,6 +89,15 @@ export default function PracticeGame({ digits, multiplicationTable }: PracticeGa
     return getDefaultProblem(digits || 1);
   });
   const [feedback, setFeedback] = useState<null | "correct" | "wrong">(null);
+  const [showAnswer, setShowAnswer] = useState(false);
+  const [gameFinished, setGameFinished] = useState(false);
+  const [showScoreForm, setShowScoreForm] = useState(false);
+  const [playerName, setPlayerName] = useState("");
+
+  // 디버깅을 위한 useEffect
+  useEffect(() => {
+    console.log("상태 변화:", { running, gameFinished, timeLeft });
+  }, [running, gameFinished, timeLeft]);
   const [voiceEnabled, setVoiceEnabled] = useState(true);
   const [options, setOptions] = useState<number[]>([]);
 
@@ -100,28 +121,21 @@ export default function PracticeGame({ digits, multiplicationTable }: PracticeGa
   useEffect(() => {
     // On first client mount or when digits/table change while not running,
     // create a new random problem only on the client to avoid hydration mismatch
-    if (!running) {
-      const p = multiplicationTable 
+    if (!running && !gameFinished) {
+      const p = multiplicationTable
         ? generateMultiplicationProblem(multiplicationTable)
         : generateProblem(digits || 1);
       setProblem(p);
       setFeedback(null);
+      setShowAnswer(false);
       buildOptions(p);
     }
-  }, [digits, multiplicationTable, running, buildOptions]);
+  }, [digits, multiplicationTable, running, gameFinished, buildOptions]);
 
   useEffect(() => {
     if (!running) return;
     intervalRef.current = window.setInterval(() => {
-      setTimeLeft((t) => {
-        if (t <= 1) {
-          window.clearInterval(intervalRef.current!);
-          intervalRef.current = null;
-          setRunning(false);
-          return 0;
-        }
-        return t - 1;
-      });
+      setTimeLeft((t) => t - 1);
     }, 1000);
     return () => {
       if (intervalRef.current) {
@@ -130,6 +144,15 @@ export default function PracticeGame({ digits, multiplicationTable }: PracticeGa
       }
     };
   }, [running]);
+
+  // timeLeft가 0이 되면 게임 종료
+  useEffect(() => {
+    if (running && timeLeft <= 0) {
+      console.log("게임 종료! 시간이 다 되었습니다.");
+      setRunning(false);
+      setGameFinished(true);
+    }
+  }, [running, timeLeft]);
 
   // numeric input removed; keep code minimal
 
@@ -157,11 +180,13 @@ export default function PracticeGame({ digits, multiplicationTable }: PracticeGa
     setScore(0);
     setStreak(0);
     setTimeLeft(GAME_CONFIG.TIMER_SECONDS);
-    const p = multiplicationTable 
+    const p = multiplicationTable
       ? generateMultiplicationProblem(multiplicationTable)
       : generateProblem(digits || 1);
     setProblem(p);
     setFeedback(null);
+    setShowAnswer(false);
+    setGameFinished(false);
     buildOptions(p);
     setRunning(true);
   }, [digits, multiplicationTable, buildOptions]);
@@ -178,29 +203,43 @@ export default function PracticeGame({ digits, multiplicationTable }: PracticeGa
         setStreak(newStreak);
         setFeedback("correct");
         say("정답!");
-        const next = multiplicationTable 
+        const next = multiplicationTable
           ? generateMultiplicationProblem(multiplicationTable)
           : generateProblem(digits || 1);
         setProblem(next);
         buildOptions(next);
       } else {
         setStreak(0);
-        // 즉시 다음 문제로 이동하며 시각적 오답 상태를 남기지 않음
+        setFeedback("wrong");
+        setShowAnswer(true);
         try {
           if ("vibrate" in navigator) {
             navigator.vibrate?.(60);
           }
         } catch {}
         say("틀렸어요");
-        const next = multiplicationTable 
-          ? generateMultiplicationProblem(multiplicationTable)
-          : generateProblem(digits || 1);
-        setProblem(next);
-        buildOptions(next);
-        setFeedback(null);
+
+        // 0.5초 후 다음 문제로 이동
+        setTimeout(() => {
+          const next = multiplicationTable
+            ? generateMultiplicationProblem(multiplicationTable)
+            : generateProblem(digits || 1);
+          setProblem(next);
+          buildOptions(next);
+          setFeedback(null);
+          setShowAnswer(false);
+        }, 500);
       }
     },
-    [digits, multiplicationTable, problem.answer, running, say, streak, buildOptions]
+    [
+      digits,
+      multiplicationTable,
+      problem.answer,
+      running,
+      say,
+      streak,
+      buildOptions,
+    ]
   );
 
   const onKeyDown = useCallback((e: React.KeyboardEvent<HTMLButtonElement>) => {
@@ -208,6 +247,46 @@ export default function PracticeGame({ digits, multiplicationTable }: PracticeGa
       e.preventDefault();
     }
   }, []);
+
+  const saveScore = useCallback(() => {
+    if (!playerName.trim()) return;
+
+    const gameType = multiplicationTable
+      ? `${multiplicationTable}단 구구단`
+      : `${digitsLabelKorean(digits || 1)} 덧셈·뺄셈`;
+
+    const scoreData = {
+      id: Date.now(),
+      name: playerName.trim(),
+      score,
+      gameType,
+      date: new Date().toLocaleString("ko-KR"),
+      timestamp: Date.now(),
+    };
+
+    const existingScores = JSON.parse(
+      localStorage.getItem("mathGameScores") || "[]"
+    );
+    existingScores.push(scoreData);
+
+    // 최고 점수 순으로 정렬하고 최대 100개 기록만 유지
+    const sortedScores = existingScores
+      .sort((a: ScoreData, b: ScoreData) => {
+        // 먼저 점수로 정렬 (높은 점수 우선)
+        if (b.score !== a.score) {
+          return b.score - a.score;
+        }
+        // 점수가 같으면 최근 기록 우선
+        return b.timestamp - a.timestamp;
+      })
+      .slice(0, 100);
+
+    localStorage.setItem("mathGameScores", JSON.stringify(sortedScores));
+
+    setShowScoreForm(false);
+    setPlayerName("");
+    alert("점수가 저장되었습니다! 🎉");
+  }, [playerName, score, multiplicationTable, digits]);
 
   const title = useMemo(() => {
     if (multiplicationTable) {
@@ -233,13 +312,106 @@ export default function PracticeGame({ digits, multiplicationTable }: PracticeGa
           </div>
         </div>
 
-        {!running ? (
-          <div className="flex items-center justify-center py-10">
+        {(() => {
+          console.log("렌더링 조건 확인:", { gameFinished, running });
+          return gameFinished;
+        })() ? (
+          <div className="flex flex-col items-center justify-center py-10 gap-6">
+            <div className="text-center">
+              <h2 className="text-3xl font-bold mb-4">🎉 게임 종료! 🎉</h2>
+              <div className="text-2xl mb-2">
+                최종 점수:{" "}
+                <span className="font-bold text-blue-600">{score}점</span>
+              </div>
+              <div className="text-lg text-gray-600">
+                {score >= 20
+                  ? "와! 정말 잘했어요! 🌟"
+                  : score >= 15
+                  ? "훌륭해요! 👏"
+                  : score >= 10
+                  ? "잘했어요! 😊"
+                  : score >= 5
+                  ? "좋아요! 더 연습해보세요! 💪"
+                  : "다음엔 더 잘할 수 있어요! 화이팅! 🚀"}
+              </div>
+            </div>
+            {!showScoreForm ? (
+              <div className="flex flex-col gap-4">
+                <button
+                  className="h-14 px-6 rounded-full text-lg font-bold kid-button border border-black/10 bg-[#ffd700] active:scale-[.98]"
+                  onClick={() => setShowScoreForm(true)}
+                >
+                  점수 기록하기
+                </button>
+                <div className="flex gap-4">
+                  <button
+                    className="h-14 px-6 rounded-full text-lg font-bold kid-button border border-black/10 bg-[#e7f7ea] active:scale-[.98]"
+                    onClick={startGame}
+                  >
+                    다시 도전하기
+                  </button>
+                  <button
+                    className="h-14 px-6 rounded-full text-lg font-bold kid-button border border-black/10 bg-[#f0f0f0] active:scale-[.98]"
+                    onClick={() => (window.location.href = "/")}
+                  >
+                    처음으로
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="flex flex-col gap-4 w-full max-w-sm">
+                <div className="text-center mb-2">
+                  <h3 className="text-xl font-bold mb-2">점수 기록하기</h3>
+                  <p className="text-sm text-gray-600">
+                    {multiplicationTable
+                      ? `${multiplicationTable}단 구구단`
+                      : `${digitsLabelKorean(digits || 1)} 덧셈·뺄셈`}{" "}
+                    - {score}점
+                  </p>
+                </div>
+                <input
+                  type="text"
+                  placeholder="이름을 입력하세요"
+                  value={playerName}
+                  onChange={(e) => setPlayerName(e.target.value)}
+                  className="h-12 px-4 rounded-full text-lg border border-black/20 bg-white text-center focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  maxLength={10}
+                  autoFocus
+                />
+                <div className="flex gap-3">
+                  <button
+                    className="flex-1 h-12 rounded-full text-base font-bold kid-button border border-black/10 bg-[#e7f7ea] active:scale-[.98]"
+                    onClick={saveScore}
+                    disabled={!playerName.trim()}
+                  >
+                    저장하기
+                  </button>
+                  <button
+                    className="flex-1 h-12 rounded-full text-base font-bold kid-button border border-black/10 bg-[#f0f0f0] active:scale-[.98]"
+                    onClick={() => {
+                      setShowScoreForm(false);
+                      setPlayerName("");
+                    }}
+                  >
+                    취소
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        ) : !running ? (
+          <div className="flex flex-col items-center justify-center py-10 gap-6">
             <button
-              className="h-14 px-8 rounded-full text-lg font-bold kid-button border border-black/10 bg-[#e7f7ea] active:scale-[.98]"
+              className="h-16 px-10 rounded-full text-xl font-bold kid-button border border-black/10 bg-[#e7f7ea] active:scale-[.98]"
               onClick={startGame}
             >
               {GAME_CONFIG.START_BUTTON_TEXT}
+            </button>
+            <button
+              className="h-14 px-8 rounded-full text-lg font-bold kid-button border border-black/10 bg-[#f0f0f0] active:scale-[.98]"
+              onClick={() => (window.location.href = "/")}
+            >
+              메인으로 돌아가기
             </button>
           </div>
         ) : (
@@ -250,13 +422,15 @@ export default function PracticeGame({ digits, multiplicationTable }: PracticeGa
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-3 select-none">
+            <div className="grid grid-cols-2 gap-6 select-none">
               {options.map((opt) => (
                 <button
                   key={opt}
-                  className={`h-16 text-2xl rounded-2xl border active:scale-[.98] ${
-                    feedback === "wrong" && opt !== problem.answer
-                      ? "border-black/10 bg-background"
+                  className={`h-24 text-4xl rounded-2xl border active:scale-[.98] ${
+                    showAnswer && opt === problem.answer
+                      ? "border-green-500 bg-green-100 text-green-800"
+                      : feedback === "wrong" && opt !== problem.answer
+                      ? "border-red-300 bg-red-50 text-red-600"
                       : "border-black/15 bg-background"
                   }`}
                   onClick={() => submitAnswer(opt)}
