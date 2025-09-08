@@ -60,7 +60,7 @@ type PracticeGameProps = {
 
 export default function PracticeGame({ digits }: PracticeGameProps) {
   const [running, setRunning] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(60);
+  const [timeLeft, setTimeLeft] = useState(30);
   const [score, setScore] = useState(0);
   const [streak, setStreak] = useState(0);
   const [problem, setProblem] = useState<Problem>(() =>
@@ -143,7 +143,7 @@ export default function PracticeGame({ digits }: PracticeGameProps) {
   const startGame = useCallback(() => {
     setScore(0);
     setStreak(0);
-    setTimeLeft(60);
+    setTimeLeft(30);
     const p = generateProblem(digits);
     setProblem(p);
     setFeedback(null);

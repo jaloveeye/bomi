@@ -20,7 +20,30 @@ const jua = Jua({
 
 export const metadata: Metadata = {
   title: "보미의 즐거운 수학 놀이",
-  description: "Bomi - fun math practice for kids",
+  description:
+    "아이들을 위한 재미있는 수학 연습 게임. 덧셈과 뺄셈을 게임처럼 즐기며 배워보세요!",
+  keywords: ["수학", "게임", "교육", "덧셈", "뺄셈", "아이", "학습", "연습"],
+  authors: [{ name: "Bomi Team" }],
+  creator: "Bomi",
+  publisher: "Bomi",
+  robots: "index, follow",
+  openGraph: {
+    title: "보미의 즐거운 수학 놀이",
+    description: "아이들을 위한 재미있는 수학 연습 게임",
+    type: "website",
+    locale: "ko_KR",
+    siteName: "보미의 즐거운 수학 놀이",
+  },
+  twitter: {
+    card: "summary",
+    title: "보미의 즐거운 수학 놀이",
+    description: "아이들을 위한 재미있는 수학 연습 게임",
+  },
+  icons: {
+    icon: "/icon.svg",
+    shortcut: "/icon.svg",
+    apple: "/icon.svg",
+  },
 };
 
 export default function RootLayout({
