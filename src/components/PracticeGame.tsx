@@ -6,7 +6,7 @@ import { GAME_CONFIG } from "../constants/game";
 type Problem = {
   a: number;
   b: number;
-  op: "+" | "-";
+  op: "+" | "-" | "×";
   answer: number;
 };
 
@@ -22,7 +22,7 @@ function getDigitRange(digits: number): [number, number] {
 }
 
 function generateProblem(digits: number): Problem {
-  const operator: "+" | "-" = Math.random() < 0.5 ? "+" : "-";
+  const operator: "+" | "-" | "×" = Math.random() < 0.5 ? "+" : "-";
 
   const [min, max] = getDigitRange(digits);
 
@@ -37,6 +37,11 @@ function generateProblem(digits: number): Problem {
   let b = getRandomInt(min, max);
   if (b > a) [a, b] = [b, a];
   return { a, b, op: "-", answer: a - b };
+}
+
+function generateMultiplicationProblem(table: number): Problem {
+  const b = getRandomInt(1, 9);
+  return { a: table, b, op: "×", answer: table * b };
 }
 
 function getDefaultProblem(digits: number): Problem {
@@ -56,17 +61,21 @@ function digitsLabelKorean(digits: number): string {
 }
 
 type PracticeGameProps = {
-  digits: number;
+  digits?: number;
+  multiplicationTable?: number;
 };
 
-export default function PracticeGame({ digits }: PracticeGameProps) {
+export default function PracticeGame({ digits, multiplicationTable }: PracticeGameProps) {
   const [running, setRunning] = useState(false);
   const [timeLeft, setTimeLeft] = useState<number>(GAME_CONFIG.TIMER_SECONDS);
   const [score, setScore] = useState(0);
   const [streak, setStreak] = useState(0);
-  const [problem, setProblem] = useState<Problem>(() =>
-    getDefaultProblem(digits)
-  );
+  const [problem, setProblem] = useState<Problem>(() => {
+    if (multiplicationTable) {
+      return generateMultiplicationProblem(multiplicationTable);
+    }
+    return getDefaultProblem(digits || 1);
+  });
   const [feedback, setFeedback] = useState<null | "correct" | "wrong">(null);
   const [voiceEnabled, setVoiceEnabled] = useState(true);
   const [options, setOptions] = useState<number[]>([]);
@@ -89,15 +98,17 @@ export default function PracticeGame({ digits }: PracticeGameProps) {
   }, []);
 
   useEffect(() => {
-    // On first client mount or when digits change while not running,
+    // On first client mount or when digits/table change while not running,
     // create a new random problem only on the client to avoid hydration mismatch
     if (!running) {
-      const p = generateProblem(digits);
+      const p = multiplicationTable 
+        ? generateMultiplicationProblem(multiplicationTable)
+        : generateProblem(digits || 1);
       setProblem(p);
       setFeedback(null);
       buildOptions(p);
     }
-  }, [digits, running, buildOptions]);
+  }, [digits, multiplicationTable, running, buildOptions]);
 
   useEffect(() => {
     if (!running) return;
@@ -146,12 +157,14 @@ export default function PracticeGame({ digits }: PracticeGameProps) {
     setScore(0);
     setStreak(0);
     setTimeLeft(GAME_CONFIG.TIMER_SECONDS);
-    const p = generateProblem(digits);
+    const p = multiplicationTable 
+      ? generateMultiplicationProblem(multiplicationTable)
+      : generateProblem(digits || 1);
     setProblem(p);
     setFeedback(null);
     buildOptions(p);
     setRunning(true);
-  }, [digits, buildOptions]);
+  }, [digits, multiplicationTable, buildOptions]);
 
   // resetGame removed per new flow (no explicit reset button)
 
@@ -165,7 +178,9 @@ export default function PracticeGame({ digits }: PracticeGameProps) {
         setStreak(newStreak);
         setFeedback("correct");
         say("정답!");
-        const next = generateProblem(digits);
+        const next = multiplicationTable 
+          ? generateMultiplicationProblem(multiplicationTable)
+          : generateProblem(digits || 1);
         setProblem(next);
         buildOptions(next);
       } else {
@@ -177,13 +192,15 @@ export default function PracticeGame({ digits }: PracticeGameProps) {
           }
         } catch {}
         say("틀렸어요");
-        const next = generateProblem(digits);
+        const next = multiplicationTable 
+          ? generateMultiplicationProblem(multiplicationTable)
+          : generateProblem(digits || 1);
         setProblem(next);
         buildOptions(next);
         setFeedback(null);
       }
     },
-    [digits, problem.answer, running, say, streak, buildOptions]
+    [digits, multiplicationTable, problem.answer, running, say, streak, buildOptions]
   );
 
   const onKeyDown = useCallback((e: React.KeyboardEvent<HTMLButtonElement>) => {
@@ -193,9 +210,12 @@ export default function PracticeGame({ digits }: PracticeGameProps) {
   }, []);
 
   const title = useMemo(() => {
-    const base = digitsLabelKorean(digits);
+    if (multiplicationTable) {
+      return `${multiplicationTable}단 구구단`;
+    }
+    const base = digitsLabelKorean(digits || 1);
     return `${base} 덧셈·뺄셈`;
-  }, [digits]);
+  }, [digits, multiplicationTable]);
 
   return (
     <div className="min-h-dvh flex flex-col items-center justify-start p-4 gap-4 max-w-screen-sm mx-auto">

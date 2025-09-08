@@ -24,6 +24,21 @@ export default function Home() {
             2자리 덧셈·뺄셈
           </Link>
         </div>
+        
+        <div className="mt-8">
+          <h2 className="text-2xl md:text-3xl font-bold mb-6">구구단 연습</h2>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {[2, 3, 4, 5, 6, 7, 8, 9].map((table) => (
+              <Link
+                key={table}
+                className="block rounded-xl p-4 border border-[#bfe7c8] bg-[#e7f7ea] hover:bg-[#d7f1de] active:bg-[#c7ebd2] transition-colors text-xl md:text-2xl kid-button text-center"
+                href={`/practice/multiplication/${table}-table`}
+              >
+                {table}단
+              </Link>
+            ))}
+          </div>
+        </div>
       </main>
     </div>
   );
