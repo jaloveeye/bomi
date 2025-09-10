@@ -19,6 +19,12 @@ type Problem = {
   answer: number;
 };
 
+type WrongAnswer = {
+  problem: Problem;
+  userAnswer: number;
+  timestamp: number;
+};
+
 function getRandomInt(min: number, max: number) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
@@ -93,6 +99,8 @@ export default function PracticeGame({
   const [gameFinished, setGameFinished] = useState(false);
   const [showScoreForm, setShowScoreForm] = useState(false);
   const [playerName, setPlayerName] = useState("");
+  const [wrongAnswers, setWrongAnswers] = useState<WrongAnswer[]>([]);
+  const [showWrongAnswers, setShowWrongAnswers] = useState(false);
 
   // 디버깅을 위한 useEffect
   useEffect(() => {
@@ -180,6 +188,8 @@ export default function PracticeGame({
     setScore(0);
     setStreak(0);
     setTimeLeft(GAME_CONFIG.TIMER_SECONDS);
+    setWrongAnswers([]);
+    setShowWrongAnswers(false);
     const p = multiplicationTable
       ? generateMultiplicationProblem(multiplicationTable)
       : generateProblem(digits || 1);
@@ -212,6 +222,15 @@ export default function PracticeGame({
         setStreak(0);
         setFeedback("wrong");
         setShowAnswer(true);
+
+        // 틀린 문제를 기록
+        const wrongAnswer: WrongAnswer = {
+          problem: { ...problem },
+          userAnswer: selected,
+          timestamp: Date.now(),
+        };
+        setWrongAnswers((prev) => [...prev, wrongAnswer]);
+
         try {
           if ("vibrate" in navigator) {
             navigator.vibrate?.(60);
@@ -234,7 +253,7 @@ export default function PracticeGame({
     [
       digits,
       multiplicationTable,
-      problem.answer,
+      problem,
       running,
       say,
       streak,
@@ -335,7 +354,7 @@ export default function PracticeGame({
                   : "다음엔 더 잘할 수 있어요! 화이팅! 🚀"}
               </div>
             </div>
-            {!showScoreForm ? (
+            {!showScoreForm && !showWrongAnswers ? (
               <div className="flex flex-col gap-4">
                 <button
                   className="h-14 px-6 rounded-full text-lg font-bold kid-button border border-black/10 bg-[#ffd700] active:scale-[.98]"
@@ -343,6 +362,14 @@ export default function PracticeGame({
                 >
                   점수 기록하기
                 </button>
+                {wrongAnswers.length > 0 && (
+                  <button
+                    className="h-14 px-6 rounded-full text-lg font-bold kid-button border border-black/10 bg-[#ffb3ba] active:scale-[.98]"
+                    onClick={() => setShowWrongAnswers(true)}
+                  >
+                    틀린 문제 다시 보기 ({wrongAnswers.length}개)
+                  </button>
+                )}
                 <div className="flex gap-4">
                   <button
                     className="h-14 px-6 rounded-full text-lg font-bold kid-button border border-black/10 bg-[#e7f7ea] active:scale-[.98]"
@@ -358,7 +385,7 @@ export default function PracticeGame({
                   </button>
                 </div>
               </div>
-            ) : (
+            ) : showScoreForm ? (
               <div className="flex flex-col gap-4 w-full max-w-sm">
                 <div className="text-center mb-2">
                   <h3 className="text-xl font-bold mb-2">점수 기록하기</h3>
@@ -394,6 +421,73 @@ export default function PracticeGame({
                     }}
                   >
                     취소
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="flex flex-col gap-4 w-full max-w-lg">
+                <div className="text-center mb-4">
+                  <h3 className="text-2xl font-bold mb-2">
+                    틀린 문제 다시 보기
+                  </h3>
+                  <p className="text-sm text-gray-600">
+                    총 {wrongAnswers.length}개 문제를 틀렸어요. 다시 한번
+                    확인해보세요!
+                  </p>
+                </div>
+
+                <div className="space-y-4 max-h-96 overflow-y-auto">
+                  {wrongAnswers.map((wrong, index) => (
+                    <div
+                      key={index}
+                      className="p-4 bg-red-50 border border-red-200 rounded-xl"
+                    >
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="text-lg font-bold text-red-800">
+                          {wrong.problem.a} {wrong.problem.op} {wrong.problem.b}{" "}
+                          = ?
+                        </div>
+                        <div className="text-sm text-gray-500">
+                          #{index + 1}
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-4 text-sm">
+                        <div className="flex items-center gap-2">
+                          <span className="text-red-600">❌ 내 답:</span>
+                          <span className="font-bold text-red-700">
+                            {wrong.userAnswer}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-green-600">✅ 정답:</span>
+                          <span className="font-bold text-green-700">
+                            {wrong.problem.answer}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="mt-2 text-xs text-gray-600">
+                        {wrong.problem.op === "+"
+                          ? `${wrong.problem.a}개에 ${wrong.problem.b}개를 더하면 ${wrong.problem.answer}개가 됩니다`
+                          : wrong.problem.op === "-"
+                          ? `${wrong.problem.a}개에서 ${wrong.problem.b}개를 빼면 ${wrong.problem.answer}개가 됩니다`
+                          : `${wrong.problem.a} × ${wrong.problem.b} = ${wrong.problem.answer}입니다`}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="flex gap-3">
+                  <button
+                    className="flex-1 h-12 rounded-full text-base font-bold kid-button border border-black/10 bg-[#e7f7ea] active:scale-[.98]"
+                    onClick={() => setShowWrongAnswers(false)}
+                  >
+                    돌아가기
+                  </button>
+                  <button
+                    className="flex-1 h-12 rounded-full text-base font-bold kid-button border border-black/10 bg-[#ffd700] active:scale-[.98]"
+                    onClick={startGame}
+                  >
+                    다시 도전하기
                   </button>
                 </div>
               </div>
