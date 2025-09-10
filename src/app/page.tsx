@@ -1,12 +1,31 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
 import ScoreList from "@/components/ScoreList";
 import AnimatedBackground from "@/components/AnimatedBackground";
 
 export default function Home() {
+  const playBomiSong = () => {
+    // MUREKA 링크로 직접 재생
+    const murekaUrl = "https://www.mureka.ai/ko/song-detail/93954620063745";
+    window.open(murekaUrl, "_blank");
+  };
   return (
     <div className="min-h-screen flex flex-col items-center justify-start md:justify-center p-4 md:p-6 relative">
       <AnimatedBackground />
+
+      {/* 보미 노래 재생 버튼 */}
+      <div className="fixed top-4 right-4 z-20">
+        <button
+          onClick={playBomiSong}
+          className="p-3 rounded-full shadow-lg transition-all duration-300 bg-blue-500 hover:bg-blue-600 text-white"
+          title="보미의 수학 노래 듣기"
+        >
+          🎵 보미 노래
+        </button>
+      </div>
+
       <main className="w-full max-w-[720px] text-center relative z-10 pt-8 md:pt-0">
         <h1 className="text-3xl md:text-4xl lg:text-5xl font-extrabold mb-4 md:mb-6 tracking-tight">
           보미의 즐거운 수학 놀이
@@ -39,6 +58,16 @@ export default function Home() {
             href="/story"
           >
             🏞️ 보미의 모험 이야기
+          </Link>
+        </div>
+
+        {/* 패턴 인식 게임 */}
+        <div className="mb-6 md:mb-8">
+          <Link
+            className="block rounded-2xl p-4 md:p-6 lg:p-8 border border-[#a8e6cf] bg-[#d4f1e8] hover:bg-[#c4ebd8] active:bg-[#b4e5c8] transition-colors text-xl md:text-2xl lg:text-3xl kid-button"
+            href="/pattern"
+          >
+            🔍 패턴 찾기 게임
           </Link>
         </div>
 

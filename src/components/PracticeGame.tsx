@@ -226,7 +226,10 @@ export default function PracticeGame({
         setScore((s) => s + 1);
         setStreak(newStreak);
         setFeedback("correct");
-        say("정답!");
+        // 정답 음성 메시지 - 사용자 클릭 후이므로 즉시 재생 가능
+        setTimeout(() => {
+          say("정답!");
+        }, 100);
         const next = multiplicationTable
           ? generateMultiplicationProblem(multiplicationTable)
           : generateProblem(digits || 1);
@@ -250,7 +253,10 @@ export default function PracticeGame({
             navigator.vibrate?.(60);
           }
         } catch {}
-        say("틀렸어요");
+        // 오답 음성 메시지 - 사용자 클릭 후이므로 즉시 재생 가능
+        setTimeout(() => {
+          say("틀렸어요");
+        }, 100);
 
         // 0.5초 후 다음 문제로 이동
         setTimeout(() => {
@@ -531,6 +537,8 @@ export default function PracticeGame({
                       ? "border-green-500 bg-green-100 text-green-800"
                       : feedback === "wrong" && opt !== problem.answer
                       ? "border-red-300 bg-red-50 text-red-600"
+                      : feedback === "correct" && opt === problem.answer
+                      ? "border-green-500 bg-green-100 text-green-800"
                       : "border-black/15 bg-background"
                   }`}
                   onClick={() => submitAnswer(opt)}
