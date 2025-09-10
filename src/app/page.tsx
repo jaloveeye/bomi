@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
+import { useState, useEffect, useRef } from "react";
 import ScoreList from "@/components/ScoreList";
 import AnimatedBackground from "@/components/AnimatedBackground";
 import LevelProgress from "@/components/LevelProgress";
@@ -19,23 +20,130 @@ export default function Home() {
     closeAchievement,
   } = useLevelSystem();
 
+  const [isMusicPlaying, setIsMusicPlaying] = useState(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  // 페이지 로드 시 자동 재생 시도
+  useEffect(() => {
+    const tryAutoPlay = async () => {
+      if (audioRef.current) {
+        try {
+          await audioRef.current.play();
+          setIsMusicPlaying(true);
+        } catch {
+          // 자동 재생이 차단된 경우 사용자 상호작용 대기
+          console.log(
+            "자동 재생이 차단되었습니다. 사용자 상호작용을 기다립니다."
+          );
+
+          const handleFirstInteraction = () => {
+            if (!isMusicPlaying && audioRef.current) {
+              playBomiSong();
+            }
+          };
+
+          // 다양한 상호작용 이벤트 리스너 추가
+          document.addEventListener("click", handleFirstInteraction, {
+            once: true,
+          });
+          document.addEventListener("touchstart", handleFirstInteraction, {
+            once: true,
+          });
+          document.addEventListener("keydown", handleFirstInteraction, {
+            once: true,
+          });
+
+          return () => {
+            document.removeEventListener("click", handleFirstInteraction);
+            document.removeEventListener("touchstart", handleFirstInteraction);
+            document.removeEventListener("keydown", handleFirstInteraction);
+          };
+        }
+      }
+    };
+
+    // 페이지 로드 후 약간의 지연을 두고 자동 재생 시도
+    const timer = setTimeout(tryAutoPlay, 500);
+
+    return () => clearTimeout(timer);
+  }, [isMusicPlaying]);
+
+  // 오디오 요소 로드 완료 시 자동 재생 시도
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio) return;
+
+    const handleCanPlay = async () => {
+      try {
+        await audio.play();
+        setIsMusicPlaying(true);
+      } catch (error) {
+        console.log("오디오 로드 후 자동 재생 실패:", error);
+      }
+    };
+
+    const handleLoadedData = async () => {
+      try {
+        await audio.play();
+        setIsMusicPlaying(true);
+      } catch (error) {
+        console.log("오디오 데이터 로드 후 자동 재생 실패:", error);
+      }
+    };
+
+    audio.addEventListener("canplay", handleCanPlay);
+    audio.addEventListener("loadeddata", handleLoadedData);
+
+    return () => {
+      audio.removeEventListener("canplay", handleCanPlay);
+      audio.removeEventListener("loadeddata", handleLoadedData);
+    };
+  }, []);
+
   const playBomiSong = () => {
-    // MUREKA 링크로 직접 재생
-    const murekaUrl = "https://www.mureka.ai/ko/song-detail/93954620063745";
-    window.open(murekaUrl, "_blank");
+    if (audioRef.current) {
+      audioRef.current.play();
+      setIsMusicPlaying(true);
+    }
+  };
+
+  const stopBomiSong = () => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.currentTime = 0;
+      setIsMusicPlaying(false);
+    }
   };
   return (
     <div className="min-h-screen flex flex-col items-center justify-start md:justify-center p-4 md:p-6 relative">
       <AnimatedBackground />
 
-      {/* 보미 노래 재생 버튼 */}
+      {/* 배경음악 오디오 요소 */}
+      <audio
+        ref={audioRef}
+        loop
+        preload="auto"
+        autoPlay
+        muted={false}
+        className="hidden"
+      >
+        <source src="/bomi-song.m4a" type="audio/mp4" />
+        <source src="/bomi-song.mp3" type="audio/mpeg" />
+        브라우저가 오디오를 지원하지 않습니다.
+      </audio>
+
+      {/* 음악 컨트롤 버튼 */}
       <div className="fixed top-4 right-4 z-20">
         <button
-          onClick={playBomiSong}
-          className="p-3 rounded-full shadow-lg transition-all duration-300 bg-blue-500 hover:bg-blue-600 text-white"
-          title="보미의 수학 노래 듣기"
+          onClick={isMusicPlaying ? stopBomiSong : playBomiSong}
+          className={`p-3 rounded-full shadow-lg transition-all duration-300 ${
+            isMusicPlaying
+              ? "bg-red-500 hover:bg-red-600 text-white"
+              : "bg-green-500 hover:bg-green-600 text-white"
+          }`}
+          title={isMusicPlaying ? "음악 정지" : "음악 재생"}
         >
-          🎵 보미 노래
+          {isMusicPlaying ? "⏸️" : "🎵"}
         </button>
       </div>
 
