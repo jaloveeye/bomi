@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { GAME_CONFIG } from "../constants/game";
+import { useLevelSystem } from "../hooks/useLevelSystem";
 
 type ScoreData = {
   id: number;
@@ -88,6 +89,14 @@ export default function PracticeGame({
   const [timeLeft, setTimeLeft] = useState<number>(GAME_CONFIG.TIMER_SECONDS);
   const [score, setScore] = useState(0);
   const [streak, setStreak] = useState(0);
+
+  // 레벨 시스템 훅
+  const {
+    handleCorrectAnswer,
+    handleIncorrectAnswer,
+    handleGameComplete,
+    checkPerfectScore,
+  } = useLevelSystem();
   const [problem, setProblem] = useState<Problem>(() => {
     if (multiplicationTable) {
       return generateMultiplicationProblem(multiplicationTable);
@@ -159,8 +168,27 @@ export default function PracticeGame({
       console.log("게임 종료! 시간이 다 되었습니다.");
       setRunning(false);
       setGameFinished(true);
+
+      // 레벨 시스템: 게임 완료 처리
+      const gameType = multiplicationTable
+        ? "multiplication"
+        : digits === 1
+        ? "addition"
+        : "subtraction";
+      handleGameComplete(gameType, score);
+
+      // 완벽한 점수 체크
+      checkPerfectScore(score, GAME_CONFIG.TIMER_SECONDS);
     }
-  }, [running, timeLeft]);
+  }, [
+    running,
+    timeLeft,
+    score,
+    multiplicationTable,
+    digits,
+    handleGameComplete,
+    checkPerfectScore,
+  ]);
 
   // numeric input removed; keep code minimal
 
@@ -226,6 +254,17 @@ export default function PracticeGame({
         setScore((s) => s + 1);
         setStreak(newStreak);
         setFeedback("correct");
+
+        // 레벨 시스템: 정답 처리
+        const gameType = multiplicationTable
+          ? "multiplication"
+          : digits === 1
+          ? "addition"
+          : "subtraction";
+        const difficulty =
+          digits === 1 ? "easy" : digits === 2 ? "medium" : "hard";
+        handleCorrectAnswer(gameType, difficulty);
+
         // 정답 음성 메시지 - 사용자 클릭 후이므로 즉시 재생 가능
         setTimeout(() => {
           say("정답!");
@@ -239,6 +278,14 @@ export default function PracticeGame({
         setStreak(0);
         setFeedback("wrong");
         setShowAnswer(true);
+
+        // 레벨 시스템: 오답 처리
+        const gameType = multiplicationTable
+          ? "multiplication"
+          : digits === 1
+          ? "addition"
+          : "subtraction";
+        handleIncorrectAnswer(gameType);
 
         // 틀린 문제를 기록
         const wrongAnswer: WrongAnswer = {
@@ -270,7 +317,17 @@ export default function PracticeGame({
         }, 500);
       }
     },
-    [digits, multiplicationTable, problem, running, say, streak, buildOptions]
+    [
+      digits,
+      multiplicationTable,
+      problem,
+      running,
+      say,
+      streak,
+      buildOptions,
+      handleCorrectAnswer,
+      handleIncorrectAnswer,
+    ]
   );
 
   const onKeyDown = useCallback((e: React.KeyboardEvent<HTMLButtonElement>) => {

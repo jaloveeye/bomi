@@ -4,8 +4,21 @@ import Link from "next/link";
 import Image from "next/image";
 import ScoreList from "@/components/ScoreList";
 import AnimatedBackground from "@/components/AnimatedBackground";
+import LevelProgress from "@/components/LevelProgress";
+import AchievementBadge from "@/components/AchievementBadge";
+import LevelUpNotification from "@/components/LevelUpNotification";
+import AchievementNotification from "@/components/AchievementNotification";
+import { useLevelSystem } from "@/hooks/useLevelSystem";
 
 export default function Home() {
+  const {
+    userProgress,
+    showLevelUp,
+    showAchievement,
+    closeLevelUp,
+    closeAchievement,
+  } = useLevelSystem();
+
   const playBomiSong = () => {
     // MUREKA 링크로 직접 재생
     const murekaUrl = "https://www.mureka.ai/ko/song-detail/93954620063745";
@@ -33,6 +46,11 @@ export default function Home() {
         <p className="text-lg md:text-xl lg:text-2xl mb-6 md:mb-10">
           하기 쉬운 문제부터 천천히 해볼까요?
         </p>
+
+        {/* 레벨 진행도 */}
+        <div className="mb-6 md:mb-8">
+          <LevelProgress userProgress={userProgress} showDetails={true} />
+        </div>
 
         {/* 보미 캐릭터 이미지 */}
         <div className="mb-6 md:mb-8">
@@ -104,7 +122,39 @@ export default function Home() {
         </div>
 
         <ScoreList />
+
+        {/* 성취 배지 섹션 */}
+        <div className="mt-8 md:mt-12">
+          <h2 className="text-xl md:text-2xl lg:text-3xl font-bold mb-4 md:mb-6">
+            🏆 성취 배지
+          </h2>
+          <div className="grid grid-cols-5 md:grid-cols-10 gap-3 md:gap-4">
+            {userProgress.achievements.map((achievement) => (
+              <AchievementBadge
+                key={achievement.id}
+                achievement={achievement}
+                size="small"
+              />
+            ))}
+          </div>
+        </div>
       </main>
+
+      {/* 레벨업 알림 */}
+      {showLevelUp && (
+        <LevelUpNotification
+          newLevel={userProgress.level}
+          onClose={closeLevelUp}
+        />
+      )}
+
+      {/* 성취 알림 */}
+      {showAchievement && (
+        <AchievementNotification
+          achievement={showAchievement}
+          onClose={closeAchievement}
+        />
+      )}
     </div>
   );
 }
