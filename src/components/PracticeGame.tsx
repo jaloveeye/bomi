@@ -184,6 +184,20 @@ export default function PracticeGame({
     [voiceEnabled]
   );
 
+  // 컴포넌트 언마운트 시 음성 중단
+  useEffect(() => {
+    return () => {
+      try {
+        const synth = window.speechSynthesis;
+        if (synth) {
+          synth.cancel();
+        }
+      } catch {
+        // ignore speech errors
+      }
+    };
+  }, []);
+
   const startGame = useCallback(() => {
     setScore(0);
     setStreak(0);
@@ -250,15 +264,7 @@ export default function PracticeGame({
         }, 500);
       }
     },
-    [
-      digits,
-      multiplicationTable,
-      problem,
-      running,
-      say,
-      streak,
-      buildOptions,
-    ]
+    [digits, multiplicationTable, problem, running, say, streak, buildOptions]
   );
 
   const onKeyDown = useCallback((e: React.KeyboardEvent<HTMLButtonElement>) => {

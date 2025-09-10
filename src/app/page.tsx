@@ -32,6 +32,16 @@ export default function Home() {
           </div>
         </div>
 
+        {/* 스토리 모드 */}
+        <div className="mb-6 md:mb-8">
+          <Link
+            className="block rounded-2xl p-4 md:p-6 lg:p-8 border border-[#ffb3ba] bg-[#ffe0e6] hover:bg-[#ffd1d9] active:bg-[#ffc2cc] transition-colors text-xl md:text-2xl lg:text-3xl kid-button"
+            href="/story"
+          >
+            🏞️ 보미의 모험 이야기
+          </Link>
+        </div>
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
           <Link
             className="block rounded-2xl p-4 md:p-6 lg:p-8 border border-[#bfe7c8] bg-[#e7f7ea] hover:bg-[#d7f1de] active:bg-[#c7ebd2] transition-colors text-xl md:text-2xl lg:text-3xl kid-button"
