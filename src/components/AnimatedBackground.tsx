@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Image from "next/image";
 
 export default function AnimatedBackground() {
   const [mounted, setMounted] = useState(false);
@@ -16,26 +15,6 @@ export default function AnimatedBackground() {
 
   return (
     <div className="fixed inset-0 overflow-hidden pointer-events-none">
-      {/* 메인 캐릭터 이미지 */}
-      <div className="absolute top-32 left-1/2 transform -translate-x-1/2">
-        <div className="relative">
-          {/* 부드러운 떠다니는 애니메이션 */}
-          <div className="animate-float">
-            <Image
-              src="/bomi-character.png"
-              alt="보미 캐릭터"
-              width={256}
-              height={320}
-              className="w-64 h-80 object-cover rounded-2xl shadow-2xl opacity-90"
-              style={{
-                filter: "drop-shadow(0 10px 20px rgba(0,0,0,0.1))",
-              }}
-              priority
-            />
-          </div>
-        </div>
-      </div>
-
       {/* 배경 장식 요소들 */}
       <div className="absolute top-20 left-10 animate-pulse">
         <div className="w-16 h-16 bg-gradient-to-br from-pink-200 to-pink-300 rounded-full opacity-60"></div>

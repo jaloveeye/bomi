@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import ScoreList from "@/components/ScoreList";
 import AnimatedBackground from "@/components/AnimatedBackground";
 
@@ -13,6 +14,24 @@ export default function Home() {
         <p className="text-lg md:text-xl lg:text-2xl mb-6 md:mb-10">
           하기 쉬운 문제부터 천천히 해볼까요?
         </p>
+
+        {/* 보미 캐릭터 이미지 */}
+        <div className="mb-6 md:mb-8">
+          <div className="animate-float">
+            <Image
+              src="/bomi-character.png"
+              alt="보미 캐릭터"
+              width={200}
+              height={250}
+              className="w-48 h-60 md:w-56 md:h-70 object-cover rounded-2xl shadow-2xl opacity-90 mx-auto"
+              style={{
+                filter: "drop-shadow(0 10px 20px rgba(0,0,0,0.1))",
+              }}
+              priority
+            />
+          </div>
+        </div>
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
           <Link
             className="block rounded-2xl p-4 md:p-6 lg:p-8 border border-[#bfe7c8] bg-[#e7f7ea] hover:bg-[#d7f1de] active:bg-[#c7ebd2] transition-colors text-xl md:text-2xl lg:text-3xl kid-button"
@@ -29,7 +48,9 @@ export default function Home() {
         </div>
 
         <div className="mt-6 md:mt-8">
-          <h2 className="text-xl md:text-2xl lg:text-3xl font-bold mb-4 md:mb-6">구구단 연습</h2>
+          <h2 className="text-xl md:text-2xl lg:text-3xl font-bold mb-4 md:mb-6">
+            구구단 연습
+          </h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4">
             {[2, 3, 4, 5, 6, 7, 8, 9].map((table) => (
               <Link
