@@ -20,131 +20,115 @@ export default function Home() {
     closeAchievement,
   } = useLevelSystem();
 
-  const [isMusicPlaying, setIsMusicPlaying] = useState(false);
+  const [currentMusicIndex, setCurrentMusicIndex] = useState(0);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  // 페이지 로드 시 자동 재생 시도
-  useEffect(() => {
-    const tryAutoPlay = async () => {
-      if (audioRef.current) {
-        try {
-          await audioRef.current.play();
-          setIsMusicPlaying(true);
-        } catch {
-          // 자동 재생이 차단된 경우 사용자 상호작용 대기
-          console.log(
-            "자동 재생이 차단되었습니다. 사용자 상호작용을 기다립니다."
-          );
+  // 재생할 음악 파일 목록
+  const musicFiles = [
+    {
+      name: "보미송",
+      file: "/bomi-song.m4a",
+      image: "/bomi-song.png",
+      emoji: "🎵",
+    },
+    { name: "구르미송", file: "/cloud.m4a", image: "/cloud.png", emoji: "☁️" },
+  ];
 
-          const handleFirstInteraction = () => {
-            if (!isMusicPlaying && audioRef.current) {
-              playBomiSong();
-            }
-          };
-
-          // 다양한 상호작용 이벤트 리스너 추가
-          document.addEventListener("click", handleFirstInteraction, {
-            once: true,
-          });
-          document.addEventListener("touchstart", handleFirstInteraction, {
-            once: true,
-          });
-          document.addEventListener("keydown", handleFirstInteraction, {
-            once: true,
-          });
-
-          return () => {
-            document.removeEventListener("click", handleFirstInteraction);
-            document.removeEventListener("touchstart", handleFirstInteraction);
-            document.removeEventListener("keydown", handleFirstInteraction);
-          };
-        }
-      }
-    };
-
-    // 페이지 로드 후 약간의 지연을 두고 자동 재생 시도
-    const timer = setTimeout(tryAutoPlay, 500);
-
-    return () => clearTimeout(timer);
-  }, [isMusicPlaying]);
-
-  // 오디오 요소 로드 완료 시 자동 재생 시도
+  // 음악이 끝날 때 다음 음악으로 전환
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
 
-    const handleCanPlay = async () => {
-      try {
-        await audio.play();
-        setIsMusicPlaying(true);
-      } catch (error) {
-        console.log("오디오 로드 후 자동 재생 실패:", error);
-      }
+    const handleEnded = () => {
+      setCurrentMusicIndex((prevIndex) => (prevIndex + 1) % musicFiles.length);
     };
 
-    const handleLoadedData = async () => {
-      try {
-        await audio.play();
-        setIsMusicPlaying(true);
-      } catch (error) {
-        console.log("오디오 데이터 로드 후 자동 재생 실패:", error);
-      }
-    };
-
-    audio.addEventListener("canplay", handleCanPlay);
-    audio.addEventListener("loadeddata", handleLoadedData);
+    audio.addEventListener("ended", handleEnded);
 
     return () => {
-      audio.removeEventListener("canplay", handleCanPlay);
-      audio.removeEventListener("loadeddata", handleLoadedData);
+      audio.removeEventListener("ended", handleEnded);
     };
-  }, []);
+  }, [musicFiles.length]);
 
-  const playBomiSong = () => {
+  // 특정 음악 선택해서 재생
+  const selectAndPlayMusic = async (musicIndex: number) => {
     if (audioRef.current) {
-      audioRef.current.play();
-      setIsMusicPlaying(true);
+      try {
+        const selectedMusic = musicFiles[musicIndex];
+
+        // 현재 재생 중인 음악이 있다면 정지
+        if (!audioRef.current.paused) {
+          audioRef.current.pause();
+        }
+
+        // 새로운 음악 소스 설정
+        audioRef.current.src = selectedMusic.file;
+        audioRef.current.load();
+
+        // 재생 시도
+        await audioRef.current.play();
+
+        // 재생 성공 시 인덱스 업데이트
+        setCurrentMusicIndex(musicIndex);
+      } catch (error) {
+        console.log("음악 재생 실패:", error);
+      }
     }
   };
 
-  const stopBomiSong = () => {
+  // 음악 종료
+  const stopMusic = () => {
     if (audioRef.current) {
       audioRef.current.pause();
-      audioRef.current.currentTime = 0;
-      setIsMusicPlaying(false);
     }
   };
+
   return (
     <div className="min-h-screen flex flex-col items-center justify-start md:justify-center p-4 md:p-6 relative">
       <AnimatedBackground />
 
       {/* 배경음악 오디오 요소 */}
-      <audio
-        ref={audioRef}
-        loop
-        preload="auto"
-        autoPlay
-        muted={false}
-        className="hidden"
-      >
-        <source src="/bomi-song.m4a" type="audio/mp4" />
-        <source src="/bomi-song.mp3" type="audio/mpeg" />
+      <audio ref={audioRef} preload="none" playsInline className="hidden">
         브라우저가 오디오를 지원하지 않습니다.
       </audio>
 
-      {/* 음악 컨트롤 버튼 */}
-      <div className="fixed top-4 right-4 z-20">
-        <button
-          onClick={isMusicPlaying ? stopBomiSong : playBomiSong}
-          className={`p-3 rounded-full shadow-lg transition-all duration-300 ${
-            isMusicPlaying
-              ? "bg-red-500 hover:bg-red-600 text-white"
-              : "bg-green-500 hover:bg-green-600 text-white"
-          }`}
-          title={isMusicPlaying ? "음악 정지" : "음악 재생"}
-        >
-          {isMusicPlaying ? "⏸️" : "🎵"}
-        </button>
+      {/* 음악 컨트롤 */}
+      <div className="fixed top-4 right-4 z-20 flex flex-col gap-3">
+        {/* 음악 선택 버튼들 */}
+        <div className="flex gap-2">
+          {musicFiles.map((music, index) => (
+            <button
+              key={index}
+              onClick={() => selectAndPlayMusic(index)}
+              className={`flex items-center gap-2 px-3 py-2 rounded-lg shadow-lg transition-all duration-300 text-sm font-medium ${
+                currentMusicIndex === index
+                  ? "bg-blue-500 hover:bg-blue-600 text-white"
+                  : "bg-white hover:bg-gray-100 text-gray-700 border border-gray-300"
+              }`}
+              title={`${music.name} 재생`}
+            >
+              <Image
+                src={music.image}
+                alt={music.name}
+                width={20}
+                height={20}
+                className="w-5 h-5 object-cover rounded"
+              />
+              {music.emoji} {music.name}
+            </button>
+          ))}
+        </div>
+
+        {/* 음악 종료 버튼 */}
+        <div className="flex justify-end">
+          <button
+            onClick={stopMusic}
+            className="px-4 py-2 text-sm font-medium text-gray-600 hover:text-red-500 transition-colors duration-200 border border-transparent hover:border-red-200 rounded-lg hover:bg-red-50"
+            title="음악 종료"
+          >
+            음악 종료
+          </button>
+        </div>
       </div>
 
       <main className="w-full max-w-[720px] text-center relative z-10 pt-8 md:pt-0">
