@@ -57,28 +57,55 @@ export default function SubtractionPatternPage() {
   const [isCorrect, setIsCorrect] = useState(false);
   const [score, setScore] = useState(0);
   const [gameFinished, setGameFinished] = useState(false);
+  const [options, setOptions] = useState<number[]>([]);
 
   const pattern = subtractionPatterns[currentPattern];
-  const options = [
-    pattern.answer,
-    pattern.answer + 2,
-    pattern.answer - 2,
-    pattern.answer + 1,
-  ].sort(() => Math.random() - 0.5);
+
+  // 패턴이 변경될 때마다 options 생성
+  useEffect(() => {
+    const newOptions = [
+      pattern.answer,
+      pattern.answer + 2,
+      pattern.answer - 2,
+      pattern.answer + 1,
+    ].sort(() => Math.random() - 0.5);
+    setOptions(newOptions);
+  }, [currentPattern, pattern.answer]);
 
   const say = useCallback((text: string) => {
     try {
       const synth = window.speechSynthesis;
-      if (!synth) return;
-      const utter = new SpeechSynthesisUtterance(text);
-      utter.lang = "ko-KR";
-      utter.rate = 0.8;
-      utter.pitch = 1.1;
-      utter.volume = 0.8;
+      if (!synth) {
+        console.log("음성 합성을 지원하지 않는 브라우저입니다.");
+        return;
+      }
+
+      // 기존 음성 중단
       synth.cancel();
-      synth.speak(utter);
-    } catch {
-      // ignore speech errors
+
+      // 음성 합성 초기화를 위한 짧은 대기
+      setTimeout(() => {
+        const utter = new SpeechSynthesisUtterance(text);
+        utter.lang = "ko-KR";
+        utter.rate = 0.8;
+        utter.pitch = 1.1;
+        utter.volume = 0.8;
+
+        // 음성 이벤트 리스너 추가
+        utter.onstart = () => console.log("음성 재생 시작:", text);
+        utter.onerror = (event) => console.log("음성 재생 오류:", event.error);
+        utter.onend = () => console.log("음성 재생 완료");
+
+        // 음성 합성 상태 확인
+        if (synth.speaking) {
+          console.log("이미 음성이 재생 중입니다.");
+          return;
+        }
+
+        synth.speak(utter);
+      }, 100);
+    } catch (error) {
+      console.log("음성 재생 중 오류 발생:", error);
     }
   }, []);
 
@@ -102,7 +129,7 @@ export default function SubtractionPatternPage() {
         }, 100);
       }
 
-      // 2초 후 다음 패턴으로 이동
+      // 1초 후 다음 패턴으로 이동
       setTimeout(() => {
         if (currentPattern < subtractionPatterns.length - 1) {
           setCurrentPattern((prev) => prev + 1);
@@ -111,17 +138,12 @@ export default function SubtractionPatternPage() {
         } else {
           setGameFinished(true);
         }
-      }, 2000);
+      }, 1000);
     },
     [currentPattern, pattern.answer, say]
   );
 
-  useEffect(() => {
-    const description = `${
-      pattern.description
-    } 패턴이에요. ${pattern.sequence.join(", ")} 다음에 올 숫자는 무엇일까요?`;
-    say(description);
-  }, [pattern, say]);
+  // 자동 음성 재생 제거 - 브라우저 정책상 사용자 상호작용 후에만 음성 재생 가능
 
   // 컴포넌트 언마운트 시 음성 중단
   useEffect(() => {
@@ -193,9 +215,24 @@ export default function SubtractionPatternPage() {
         <div className="mb-6">
           <div className="flex justify-between text-sm text-gray-600 mb-2">
             <span>뺄셈 패턴</span>
-            <span>
-              {currentPattern + 1} / {subtractionPatterns.length}
-            </span>
+            <div className="flex items-center gap-4">
+              <button
+                onClick={() => {
+                  const description = `${
+                    pattern.description
+                  } 패턴이에요. ${pattern.sequence.join(
+                    ", "
+                  )} 다음에 올 숫자는 무엇일까요?`;
+                  alert(description);
+                }}
+                className="text-green-600 hover:text-green-800 text-sm font-medium"
+              >
+                📢 패턴 설명
+              </button>
+              <span>
+                {currentPattern + 1} / {subtractionPatterns.length}
+              </span>
+            </div>
           </div>
           <div className="w-full bg-gray-200 rounded-full h-2">
             <div

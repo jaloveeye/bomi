@@ -266,11 +266,16 @@ export default function PracticeGame({
         setTimeout(() => {
           say("정답!");
         }, 100);
-        const next = multiplicationTable
-          ? generateMultiplicationProblem(multiplicationTable)
-          : generateProblem(digits || 1);
-        setProblem(next);
-        buildOptions(next);
+        
+        // 500ms 후 다음 문제로 넘어가기
+        setTimeout(() => {
+          const next = multiplicationTable
+            ? generateMultiplicationProblem(multiplicationTable)
+            : generateProblem(digits || 1);
+          setProblem(next);
+          setFeedback(null); // feedback 상태 초기화
+          buildOptions(next);
+        }, 500);
       } else {
         setStreak(0);
         setFeedback("wrong");
@@ -307,8 +312,8 @@ export default function PracticeGame({
             ? generateMultiplicationProblem(multiplicationTable)
             : generateProblem(digits || 1);
           setProblem(next);
+          setFeedback(null); // feedback 상태 초기화
           buildOptions(next);
-          setFeedback(null);
         }, 500);
       }
     },
