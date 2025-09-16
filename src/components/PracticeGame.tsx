@@ -104,7 +104,6 @@ export default function PracticeGame({
     return getDefaultProblem(digits || 1);
   });
   const [feedback, setFeedback] = useState<null | "correct" | "wrong">(null);
-  const [showAnswer, setShowAnswer] = useState(false);
   const [gameFinished, setGameFinished] = useState(false);
   const [showScoreForm, setShowScoreForm] = useState(false);
   const [playerName, setPlayerName] = useState("");
@@ -144,7 +143,6 @@ export default function PracticeGame({
         : generateProblem(digits || 1);
       setProblem(p);
       setFeedback(null);
-      setShowAnswer(false);
       buildOptions(p);
     }
   }, [digits, multiplicationTable, running, gameFinished, buildOptions]);
@@ -237,7 +235,6 @@ export default function PracticeGame({
       : generateProblem(digits || 1);
     setProblem(p);
     setFeedback(null);
-    setShowAnswer(false);
     setGameFinished(false);
     buildOptions(p);
     setRunning(true);
@@ -277,7 +274,6 @@ export default function PracticeGame({
       } else {
         setStreak(0);
         setFeedback("wrong");
-        setShowAnswer(true);
 
         // 레벨 시스템: 오답 처리
         const gameType = multiplicationTable
@@ -313,7 +309,6 @@ export default function PracticeGame({
           setProblem(next);
           buildOptions(next);
           setFeedback(null);
-          setShowAnswer(false);
         }, 500);
       }
     },
@@ -590,9 +585,7 @@ export default function PracticeGame({
                 <button
                   key={opt}
                   className={`h-24 text-4xl rounded-2xl border active:scale-[.98] ${
-                    showAnswer && opt === problem.answer
-                      ? "border-green-500 bg-green-100 text-green-800"
-                      : feedback === "wrong" && opt !== problem.answer
+                    feedback === "wrong" && opt !== problem.answer
                       ? "border-red-300 bg-red-50 text-red-600"
                       : feedback === "correct" && opt === problem.answer
                       ? "border-green-500 bg-green-100 text-green-800"
