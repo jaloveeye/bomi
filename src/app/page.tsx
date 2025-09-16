@@ -181,6 +181,16 @@ export default function Home() {
           </Link>
         </div>
 
+        {/* 시계 게임 */}
+        <div className="mb-6 md:mb-8">
+          <Link
+            className="block rounded-2xl p-4 md:p-6 lg:p-8 border border-[#ffd3a5] bg-[#ffe4b5] hover:bg-[#ffdab3] active:bg-[#ffd0a1] transition-colors text-xl md:text-2xl lg:text-3xl kid-button"
+            href="/clock"
+          >
+            🕐 시계 게임
+          </Link>
+        </div>
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
           <Link
             className="block rounded-2xl p-4 md:p-6 lg:p-8 border border-[#bfe7c8] bg-[#e7f7ea] hover:bg-[#d7f1de] active:bg-[#c7ebd2] transition-colors text-xl md:text-2xl lg:text-3xl kid-button"

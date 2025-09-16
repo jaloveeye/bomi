@@ -202,6 +202,41 @@ export const ACHIEVEMENTS: Achievement[] = [
     },
     unlocked: false,
   },
+  {
+    id: "clock_read_master",
+    name: "시계 읽기 마스터",
+    description: "시계 보기 문제를 30번 맞혔어요!",
+    emoji: "🕐",
+    condition: {
+      type: "correct_answers",
+      value: 30,
+      gameType: "clock_read",
+    },
+    unlocked: false,
+  },
+  {
+    id: "clock_set_master",
+    name: "시계 맞추기 마스터",
+    description: "시계 맞추기 문제를 30번 맞혔어요!",
+    emoji: "⏰",
+    condition: {
+      type: "correct_answers",
+      value: 30,
+      gameType: "clock_set",
+    },
+    unlocked: false,
+  },
+  {
+    id: "time_master",
+    name: "시간의 달인",
+    description: "시계 게임을 100번 완주했어요!",
+    emoji: "⏱️",
+    condition: {
+      type: "games_completed",
+      value: 100,
+    },
+    unlocked: false,
+  },
 ];
 
 // 경험치 계산

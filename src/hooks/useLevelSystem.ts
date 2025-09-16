@@ -120,18 +120,25 @@ export const useLevelSystem = () => {
       });
 
       if (newAchievements.length > 0) {
-        setUserProgress((prev) => ({
-          ...prev,
-          achievements: prev.achievements.map((achievement) => {
-            const newAchievement = newAchievements.find(
-              (a) => a.id === achievement.id
-            );
-            return newAchievement || achievement;
-          }),
-        }));
+        setUserProgress((prev) => {
+          const newProgress = {
+            ...prev,
+            achievements: prev.achievements.map((achievement) => {
+              const newAchievement = newAchievements.find(
+                (a) => a.id === achievement.id
+              );
+              return newAchievement || achievement;
+            }),
+          };
+
+          // 로컬 스토리지에 저장
+          saveProgress(newProgress);
+
+          return newProgress;
+        });
       }
     },
-    [setShowAchievement]
+    [setShowAchievement, saveProgress]
   );
 
   // 문제 정답 처리
@@ -159,6 +166,9 @@ export const useLevelSystem = () => {
           },
         };
 
+        // 로컬 스토리지에 저장
+        saveProgress(newProgress);
+
         // 레벨업 체크
         if (newLevel > oldLevel) {
           setTimeout(() => setShowLevelUp(true), 500);
@@ -170,22 +180,32 @@ export const useLevelSystem = () => {
         return newProgress;
       });
     },
-    [checkAchievements]
+    [checkAchievements, saveProgress]
   );
 
   // 문제 오답 처리
-  const handleIncorrectAnswer = useCallback((gameType: string) => {
-    setUserProgress((prev) => ({
-      ...prev,
-      gameStats: {
-        ...prev.gameStats,
-        [gameType]: {
-          ...prev.gameStats[gameType],
-          totalAnswers: (prev.gameStats[gameType]?.totalAnswers || 0) + 1,
-        },
-      },
-    }));
-  }, []);
+  const handleIncorrectAnswer = useCallback(
+    (gameType: string) => {
+      setUserProgress((prev) => {
+        const newProgress = {
+          ...prev,
+          gameStats: {
+            ...prev.gameStats,
+            [gameType]: {
+              ...prev.gameStats[gameType],
+              totalAnswers: (prev.gameStats[gameType]?.totalAnswers || 0) + 1,
+            },
+          },
+        };
+
+        // 로컬 스토리지에 저장
+        saveProgress(newProgress);
+
+        return newProgress;
+      });
+    },
+    [saveProgress]
+  );
 
   // 게임 완료 처리
   const handleGameComplete = useCallback(
@@ -207,13 +227,16 @@ export const useLevelSystem = () => {
           },
         };
 
+        // 로컬 스토리지에 저장
+        saveProgress(newProgress);
+
         // 성취 체크
         checkAchievements(newProgress);
 
         return newProgress;
       });
     },
-    [checkAchievements]
+    [checkAchievements, saveProgress]
   );
 
   // 완벽한 점수 성취 체크
@@ -233,18 +256,23 @@ export const useLevelSystem = () => {
 
             setTimeout(() => setShowAchievement(unlockedAchievement), 1000);
 
-            return {
+            const newProgress = {
               ...prev,
               achievements: prev.achievements.map((a) =>
                 a.id === "perfect_10" ? unlockedAchievement : a
               ),
             };
+
+            // 로컬 스토리지에 저장
+            saveProgress(newProgress);
+
+            return newProgress;
           }
           return prev;
         });
       }
     },
-    []
+    [saveProgress]
   );
 
   // 레벨업 알림 닫기
