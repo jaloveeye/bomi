@@ -123,205 +123,192 @@ function AlienModel({
 
   return (
     <group ref={groupRef} onClick={onPartClick}>
-      {/* 숫자 0 - 완전한 원형 외계인 */}
+      {/* 숫자 0 - 실제 0 모양 (타원형) */}
       {currentNumber === 0 && (
         <group>
-          {/* 메인 몸통 - 큰 원 */}
+          {/* 0의 외곽선 - 타원형 */}
           <mesh position={[0, 0, 0]}>
-            <torusGeometry args={[2, 0.6, 16, 32]} />
+            <torusGeometry args={[1.5, 0.4, 16, 32]} />
             <meshStandardMaterial 
               color="#4ade80" 
               metalness={0.3}
               roughness={0.4}
             />
           </mesh>
-          {/* 내부 공간 */}
-          <mesh position={[0, 0, 0]}>
-            <torusGeometry args={[1.5, 0.3, 16, 32]} />
-            <meshStandardMaterial 
-              color="#22c55e" 
-              transparent
-              opacity={0.7}
-            />
-          </mesh>
-          <AlienEyes position={[0, 0.5, 0.8]} />
+          <AlienEyes position={[0, 0.5, 0.6]} />
         </group>
       )}
 
-      {/* 숫자 1 - 세로 기둥 외계인 */}
+      {/* 숫자 1 - 실제 1 모양 (세로선 + 상단 대각선) */}
       {currentNumber === 1 && (
         <group>
-          {/* 메인 몸통 */}
+          {/* 메인 세로선 */}
           <mesh position={[0, 0, 0]}>
-            <boxGeometry args={[0.6, 4.5, 0.6]} />
-            <meshStandardMaterial 
-              color="#4ade80" 
-              metalness={0.3}
-              roughness={0.4}
-            />
+            <boxGeometry args={[0.3, 4, 0.3]} />
+            <meshStandardMaterial color="#4ade80" />
           </mesh>
-          {/* 상단 모자 */}
-          <mesh position={[0, 2.2, 0]}>
-            <coneGeometry args={[0.4, 0.8, 8]} />
+          {/* 상단 대각선 (1의 특징) */}
+          <mesh position={[-0.3, 1.8, 0]} rotation={[0, 0, Math.PI / 4]}>
+            <boxGeometry args={[0.8, 0.3, 0.3]} />
             <meshStandardMaterial color="#22c55e" />
           </mesh>
-          <AlienEyes position={[0, 1.5, 0.4]} />
+          <AlienEyes position={[0, 1.5, 0.2]} />
         </group>
       )}
 
-      {/* 숫자 2 - 곡선 외계인 */}
+      {/* 숫자 2 - 실제 2 모양 (상단 곡선 + 중간 대각선 + 하단 직선) */}
       {currentNumber === 2 && (
         <group>
           {/* 상단 곡선 */}
-          <mesh position={[0, 1.8, 0]}>
-            <boxGeometry args={[3, 0.6, 0.6]} />
+          <mesh position={[0, 1.5, 0]}>
+            <boxGeometry args={[2.5, 0.4, 0.4]} />
             <meshStandardMaterial color="#4ade80" />
           </mesh>
-          {/* 중간 대각선 */}
-          <mesh position={[1, 0, 0]} rotation={[0, 0, Math.PI / 6]}>
-            <boxGeometry args={[2, 0.6, 0.6]} />
+          {/* 중간 대각선 (2의 특징) */}
+          <mesh position={[0.8, 0, 0]} rotation={[0, 0, Math.PI / 4]}>
+            <boxGeometry args={[1.8, 0.4, 0.4]} />
             <meshStandardMaterial color="#22c55e" />
           </mesh>
-          {/* 하단 곡선 */}
-          <mesh position={[0, -1.8, 0]}>
-            <boxGeometry args={[3, 0.6, 0.6]} />
+          {/* 하단 직선 */}
+          <mesh position={[0, -1.5, 0]}>
+            <boxGeometry args={[2.5, 0.4, 0.4]} />
             <meshStandardMaterial color="#15803d" />
           </mesh>
-          <AlienEyes position={[0, 1.8, 0.4]} />
+          <AlienEyes position={[0, 1.5, 0.3]} />
         </group>
       )}
 
-      {/* 숫자 3 - 세로 곡선 외계인 */}
+      {/* 숫자 3 - 실제 3 모양 (상단/중간/하단 곡선) */}
       {currentNumber === 3 && (
         <group>
           {/* 상단 곡선 */}
-          <mesh position={[0, 1.5, 0]}>
-            <boxGeometry args={[2.5, 0.6, 0.6]} />
+          <mesh position={[0, 1.2, 0]}>
+            <boxGeometry args={[2, 0.4, 0.4]} />
             <meshStandardMaterial color="#4ade80" />
           </mesh>
           {/* 중간 곡선 */}
           <mesh position={[0, 0, 0]}>
-            <boxGeometry args={[2.5, 0.6, 0.6]} />
+            <boxGeometry args={[2, 0.4, 0.4]} />
             <meshStandardMaterial color="#22c55e" />
           </mesh>
           {/* 하단 곡선 */}
-          <mesh position={[0, -1.5, 0]}>
-            <boxGeometry args={[2.5, 0.6, 0.6]} />
+          <mesh position={[0, -1.2, 0]}>
+            <boxGeometry args={[2, 0.4, 0.4]} />
             <meshStandardMaterial color="#15803d" />
           </mesh>
-          <AlienEyes position={[0, 1.5, 0.4]} />
+          <AlienEyes position={[0, 1.2, 0.3]} />
         </group>
       )}
 
-      {/* 숫자 4 - L자 외계인 */}
+      {/* 숫자 4 - 실제 4 모양 (세로선 + 가로선 + 대각선) */}
       {currentNumber === 4 && (
         <group>
-          {/* 세로선 */}
-          <mesh position={[-1, 0, 0]}>
-            <boxGeometry args={[0.6, 3.5, 0.6]} />
+          {/* 왼쪽 세로선 */}
+          <mesh position={[-0.8, 0, 0]}>
+            <boxGeometry args={[0.3, 3, 0.3]} />
             <meshStandardMaterial color="#4ade80" />
           </mesh>
           {/* 가로선 */}
           <mesh position={[0, 0, 0]}>
-            <boxGeometry args={[2.5, 0.6, 0.6]} />
+            <boxGeometry args={[2, 0.3, 0.3]} />
             <meshStandardMaterial color="#22c55e" />
           </mesh>
-          {/* 대각선 */}
-          <mesh position={[1, 0, 0]} rotation={[0, 0, -Math.PI / 4]}>
-            <boxGeometry args={[1.8, 0.6, 0.6]} />
+          {/* 대각선 (4의 특징) */}
+          <mesh position={[0.6, 0, 0]} rotation={[0, 0, -Math.PI / 4]}>
+            <boxGeometry args={[1.5, 0.3, 0.3]} />
             <meshStandardMaterial color="#15803d" />
           </mesh>
-          <AlienEyes position={[0, 1.5, 0.4]} />
+          <AlienEyes position={[0, 1.5, 0.2]} />
         </group>
       )}
 
-      {/* 숫자 5 - 상단+하단 외계인 */}
+      {/* 숫자 5 - 실제 5 모양 (상단 가로선 + 중간 세로선 + 하단 가로선) */}
       {currentNumber === 5 && (
         <group>
           {/* 상단 가로선 */}
-          <mesh position={[0, 1.8, 0]}>
-            <boxGeometry args={[3, 0.6, 0.6]} />
+          <mesh position={[0, 1.5, 0]}>
+            <boxGeometry args={[2.5, 0.4, 0.4]} />
             <meshStandardMaterial color="#4ade80" />
           </mesh>
-          {/* 중간 세로선 */}
-          <mesh position={[-1.2, 0, 0]}>
-            <boxGeometry args={[0.6, 1.8, 0.6]} />
+          {/* 중간 세로선 (왼쪽) */}
+          <mesh position={[-1, 0, 0]}>
+            <boxGeometry args={[0.3, 1.5, 0.3]} />
             <meshStandardMaterial color="#22c55e" />
           </mesh>
           {/* 하단 가로선 */}
-          <mesh position={[0, -1.8, 0]}>
-            <boxGeometry args={[3, 0.6, 0.6]} />
+          <mesh position={[0, -1.5, 0]}>
+            <boxGeometry args={[2.5, 0.4, 0.4]} />
             <meshStandardMaterial color="#15803d" />
           </mesh>
-          <AlienEyes position={[0, 1.8, 0.4]} />
+          <AlienEyes position={[0, 1.5, 0.3]} />
         </group>
       )}
 
-      {/* 숫자 6 - 원형+내부 외계인 */}
+      {/* 숫자 6 - 실제 6 모양 (원형 + 내부 곡선) */}
       {currentNumber === 6 && (
         <group>
           {/* 외부 원 */}
           <mesh position={[0, 0, 0]}>
-            <torusGeometry args={[2, 0.6, 16, 32]} />
+            <torusGeometry args={[1.5, 0.4, 16, 32]} />
             <meshStandardMaterial color="#4ade80" />
           </mesh>
-          {/* 내부 곡선 (6의 특징) */}
-          <mesh position={[0, -0.8, 0]}>
-            <boxGeometry args={[1.5, 0.4, 0.4]} />
+          {/* 내부 곡선 (6의 특징 - 하단) */}
+          <mesh position={[0, -0.5, 0]}>
+            <boxGeometry args={[1, 0.3, 0.3]} />
             <meshStandardMaterial color="#22c55e" />
           </mesh>
-          <AlienEyes position={[0, 0.5, 0.8]} />
+          <AlienEyes position={[0, 0.5, 0.6]} />
         </group>
       )}
 
-      {/* 숫자 7 - 상단+대각선 외계인 */}
+      {/* 숫자 7 - 실제 7 모양 (상단 가로선 + 대각선) */}
       {currentNumber === 7 && (
         <group>
           {/* 상단 가로선 */}
-          <mesh position={[0, 1.8, 0]}>
-            <boxGeometry args={[3, 0.6, 0.6]} />
+          <mesh position={[0, 1.5, 0]}>
+            <boxGeometry args={[2.5, 0.4, 0.4]} />
             <meshStandardMaterial color="#4ade80" />
           </mesh>
-          {/* 대각선 */}
-          <mesh position={[1, 0, 0]} rotation={[0, 0, -Math.PI / 4]}>
-            <boxGeometry args={[2.5, 0.6, 0.6]} />
+          {/* 대각선 (7의 특징) */}
+          <mesh position={[0.8, 0, 0]} rotation={[0, 0, -Math.PI / 4]}>
+            <boxGeometry args={[2.2, 0.4, 0.4]} />
             <meshStandardMaterial color="#22c55e" />
           </mesh>
-          <AlienEyes position={[0, 1.8, 0.4]} />
+          <AlienEyes position={[0, 1.5, 0.3]} />
         </group>
       )}
 
-      {/* 숫자 8 - 두 원 외계인 */}
+      {/* 숫자 8 - 실제 8 모양 (상단 원 + 하단 원) */}
       {currentNumber === 8 && (
         <group>
           {/* 상단 원 */}
-          <mesh position={[0, 1, 0]}>
-            <torusGeometry args={[1.5, 0.5, 16, 32]} />
+          <mesh position={[0, 0.8, 0]}>
+            <torusGeometry args={[1.2, 0.4, 16, 32]} />
             <meshStandardMaterial color="#4ade80" />
           </mesh>
           {/* 하단 원 */}
-          <mesh position={[0, -1, 0]}>
-            <torusGeometry args={[1.5, 0.5, 16, 32]} />
+          <mesh position={[0, -0.8, 0]}>
+            <torusGeometry args={[1.2, 0.4, 16, 32]} />
             <meshStandardMaterial color="#22c55e" />
           </mesh>
-          <AlienEyes position={[0, 1, 0.4]} />
+          <AlienEyes position={[0, 0.8, 0.3]} />
         </group>
       )}
 
-      {/* 숫자 9 - 원+직선 외계인 */}
+      {/* 숫자 9 - 실제 9 모양 (상단 원 + 하단 직선) */}
       {currentNumber === 9 && (
         <group>
           {/* 상단 원 */}
-          <mesh position={[0, 0.8, 0]}>
-            <torusGeometry args={[1.8, 0.6, 16, 32]} />
+          <mesh position={[0, 0.5, 0]}>
+            <torusGeometry args={[1.5, 0.4, 16, 32]} />
             <meshStandardMaterial color="#4ade80" />
           </mesh>
-          {/* 하단 직선 */}
-          <mesh position={[0, -1.5, 0]}>
-            <boxGeometry args={[0.6, 1.2, 0.6]} />
+          {/* 하단 직선 (9의 특징) */}
+          <mesh position={[0, -1.2, 0]}>
+            <boxGeometry args={[0.3, 1, 0.3]} />
             <meshStandardMaterial color="#22c55e" />
           </mesh>
-          <AlienEyes position={[0, 0.8, 0.6]} />
+          <AlienEyes position={[0, 0.5, 0.4]} />
         </group>
       )}
 
