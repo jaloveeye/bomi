@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls, Text } from "@react-three/drei";
+import * as THREE from "three";
 import Link from "next/link";
 import { ArrowLeft, RotateCcw } from "lucide-react";
 import { useLevelSystem } from "@/hooks/useLevelSystem";
@@ -78,7 +79,7 @@ function ApproachingWall({
   );
 }
 
-// 숫자 외계인 모델 컴포넌트 - 각 숫자를 명확한 3D 모양으로 표현
+// 고급 3D 외계인 모델 컴포넌트 - 더 정교한 모델링
 function AlienModel({
   currentNumber,
   onPartClick,
@@ -86,283 +87,275 @@ function AlienModel({
   currentNumber: number;
   onPartClick: () => void;
 }) {
+  // 애니메이션을 위한 ref
+  const groupRef = useRef<THREE.Group>(null);
+  
+  // 부드러운 회전 애니메이션
+  useEffect(() => {
+    if (groupRef.current) {
+      groupRef.current.rotation.y = 0;
+    }
+  }, [currentNumber]);
+
+  // 외계인 눈 컴포넌트
+  const AlienEyes = ({ position }: { position: [number, number, number] }) => (
+    <group position={position}>
+      {/* 왼쪽 눈 */}
+      <mesh position={[-0.2, 0, 0]}>
+        <sphereGeometry args={[0.12, 8, 8]} />
+        <meshStandardMaterial color="#ffffff" />
+      </mesh>
+      <mesh position={[-0.2, 0, 0.05]}>
+        <sphereGeometry args={[0.06, 8, 8]} />
+        <meshStandardMaterial color="#000000" />
+      </mesh>
+      {/* 오른쪽 눈 */}
+      <mesh position={[0.2, 0, 0]}>
+        <sphereGeometry args={[0.12, 8, 8]} />
+        <meshStandardMaterial color="#ffffff" />
+      </mesh>
+      <mesh position={[0.2, 0, 0.05]}>
+        <sphereGeometry args={[0.06, 8, 8]} />
+        <meshStandardMaterial color="#000000" />
+      </mesh>
+    </group>
+  );
+
   return (
-    <group>
-      {/* 숫자 0 - 둥근 원형 */}
+    <group ref={groupRef} onClick={onPartClick}>
+      {/* 숫자 0 - 완전한 원형 외계인 */}
       {currentNumber === 0 && (
         <group>
-          <mesh position={[0, 0, 0]} onClick={onPartClick}>
-            <torusGeometry args={[1.8, 0.4, 16, 32]} />
-            <meshStandardMaterial color="#4ade80" />
+          {/* 메인 몸통 - 큰 원 */}
+          <mesh position={[0, 0, 0]}>
+            <torusGeometry args={[2, 0.6, 16, 32]} />
+            <meshStandardMaterial 
+              color="#4ade80" 
+              metalness={0.3}
+              roughness={0.4}
+            />
           </mesh>
-          {/* 외계인 눈 */}
-          <mesh position={[0, 0.5, 0.5]}>
-            <sphereGeometry args={[0.1, 8, 8]} />
-            <meshStandardMaterial color="#ffffff" />
+          {/* 내부 공간 */}
+          <mesh position={[0, 0, 0]}>
+            <torusGeometry args={[1.5, 0.3, 16, 32]} />
+            <meshStandardMaterial 
+              color="#22c55e" 
+              transparent
+              opacity={0.7}
+            />
           </mesh>
-          <mesh position={[0, 0.5, 0.5]}>
-            <sphereGeometry args={[0.05, 8, 8]} />
-            <meshStandardMaterial color="#000000" />
-          </mesh>
+          <AlienEyes position={[0, 0.5, 0.8]} />
         </group>
       )}
 
-      {/* 숫자 1 - 세로 직선 */}
+      {/* 숫자 1 - 세로 기둥 외계인 */}
       {currentNumber === 1 && (
         <group>
-          <mesh position={[0, 0, 0]} onClick={onPartClick}>
-            <boxGeometry args={[0.4, 4, 0.4]} />
-            <meshStandardMaterial color="#4ade80" />
+          {/* 메인 몸통 */}
+          <mesh position={[0, 0, 0]}>
+            <boxGeometry args={[0.6, 4.5, 0.6]} />
+            <meshStandardMaterial 
+              color="#4ade80" 
+              metalness={0.3}
+              roughness={0.4}
+            />
           </mesh>
-          {/* 외계인 눈 */}
-          <mesh position={[0, 1.5, 0.3]}>
-            <sphereGeometry args={[0.1, 8, 8]} />
-            <meshStandardMaterial color="#ffffff" />
+          {/* 상단 모자 */}
+          <mesh position={[0, 2.2, 0]}>
+            <coneGeometry args={[0.4, 0.8, 8]} />
+            <meshStandardMaterial color="#22c55e" />
           </mesh>
-          <mesh position={[0, 1.5, 0.3]}>
-            <sphereGeometry args={[0.05, 8, 8]} />
-            <meshStandardMaterial color="#000000" />
-          </mesh>
+          <AlienEyes position={[0, 1.5, 0.4]} />
         </group>
       )}
 
-      {/* 숫자 2 - 곡선 모양 */}
+      {/* 숫자 2 - 곡선 외계인 */}
       {currentNumber === 2 && (
         <group>
           {/* 상단 곡선 */}
-          <mesh position={[0, 1.5, 0]} onClick={onPartClick}>
-            <boxGeometry args={[2.5, 0.4, 0.4]} />
+          <mesh position={[0, 1.8, 0]}>
+            <boxGeometry args={[3, 0.6, 0.6]} />
             <meshStandardMaterial color="#4ade80" />
           </mesh>
           {/* 중간 대각선 */}
-          <mesh position={[0.8, 0, 0]} rotation={[0, 0, Math.PI / 4]}>
-            <boxGeometry args={[1.5, 0.4, 0.4]} />
+          <mesh position={[1, 0, 0]} rotation={[0, 0, Math.PI / 6]}>
+            <boxGeometry args={[2, 0.6, 0.6]} />
             <meshStandardMaterial color="#22c55e" />
           </mesh>
-          {/* 하단 직선 */}
-          <mesh position={[0, -1.5, 0]}>
-            <boxGeometry args={[2.5, 0.4, 0.4]} />
+          {/* 하단 곡선 */}
+          <mesh position={[0, -1.8, 0]}>
+            <boxGeometry args={[3, 0.6, 0.6]} />
             <meshStandardMaterial color="#15803d" />
           </mesh>
-          {/* 외계인 눈 */}
-          <mesh position={[0, 1.5, 0.3]}>
-            <sphereGeometry args={[0.1, 8, 8]} />
-            <meshStandardMaterial color="#ffffff" />
-          </mesh>
-          <mesh position={[0, 1.5, 0.3]}>
-            <sphereGeometry args={[0.05, 8, 8]} />
-            <meshStandardMaterial color="#000000" />
-          </mesh>
+          <AlienEyes position={[0, 1.8, 0.4]} />
         </group>
       )}
 
-      {/* 숫자 3 - 두 개의 곡선 */}
+      {/* 숫자 3 - 세로 곡선 외계인 */}
       {currentNumber === 3 && (
         <group>
           {/* 상단 곡선 */}
-          <mesh position={[0, 1.2, 0]} onClick={onPartClick}>
-            <boxGeometry args={[2, 0.4, 0.4]} />
+          <mesh position={[0, 1.5, 0]}>
+            <boxGeometry args={[2.5, 0.6, 0.6]} />
             <meshStandardMaterial color="#4ade80" />
           </mesh>
           {/* 중간 곡선 */}
           <mesh position={[0, 0, 0]}>
-            <boxGeometry args={[2, 0.4, 0.4]} />
+            <boxGeometry args={[2.5, 0.6, 0.6]} />
             <meshStandardMaterial color="#22c55e" />
           </mesh>
           {/* 하단 곡선 */}
-          <mesh position={[0, -1.2, 0]}>
-            <boxGeometry args={[2, 0.4, 0.4]} />
+          <mesh position={[0, -1.5, 0]}>
+            <boxGeometry args={[2.5, 0.6, 0.6]} />
             <meshStandardMaterial color="#15803d" />
           </mesh>
-          {/* 외계인 눈 */}
-          <mesh position={[0, 1.2, 0.3]}>
-            <sphereGeometry args={[0.1, 8, 8]} />
-            <meshStandardMaterial color="#ffffff" />
-          </mesh>
-          <mesh position={[0, 1.2, 0.3]}>
-            <sphereGeometry args={[0.05, 8, 8]} />
-            <meshStandardMaterial color="#000000" />
-          </mesh>
+          <AlienEyes position={[0, 1.5, 0.4]} />
         </group>
       )}
 
-      {/* 숫자 4 - L자 모양 */}
+      {/* 숫자 4 - L자 외계인 */}
       {currentNumber === 4 && (
         <group>
           {/* 세로선 */}
-          <mesh position={[-0.8, 0, 0]} onClick={onPartClick}>
-            <boxGeometry args={[0.4, 3, 0.4]} />
+          <mesh position={[-1, 0, 0]}>
+            <boxGeometry args={[0.6, 3.5, 0.6]} />
             <meshStandardMaterial color="#4ade80" />
           </mesh>
           {/* 가로선 */}
           <mesh position={[0, 0, 0]}>
-            <boxGeometry args={[2, 0.4, 0.4]} />
+            <boxGeometry args={[2.5, 0.6, 0.6]} />
             <meshStandardMaterial color="#22c55e" />
           </mesh>
           {/* 대각선 */}
-          <mesh position={[0.8, 0, 0]} rotation={[0, 0, -Math.PI / 4]}>
-            <boxGeometry args={[1.5, 0.4, 0.4]} />
+          <mesh position={[1, 0, 0]} rotation={[0, 0, -Math.PI / 4]}>
+            <boxGeometry args={[1.8, 0.6, 0.6]} />
             <meshStandardMaterial color="#15803d" />
           </mesh>
-          {/* 외계인 눈 */}
-          <mesh position={[0, 1.5, 0.3]}>
-            <sphereGeometry args={[0.1, 8, 8]} />
-            <meshStandardMaterial color="#ffffff" />
-          </mesh>
-          <mesh position={[0, 1.5, 0.3]}>
-            <sphereGeometry args={[0.05, 8, 8]} />
-            <meshStandardMaterial color="#000000" />
-          </mesh>
+          <AlienEyes position={[0, 1.5, 0.4]} />
         </group>
       )}
 
-      {/* 숫자 5 - 상단 가로선 + 하단 곡선 */}
+      {/* 숫자 5 - 상단+하단 외계인 */}
       {currentNumber === 5 && (
         <group>
           {/* 상단 가로선 */}
-          <mesh position={[0, 1.5, 0]} onClick={onPartClick}>
-            <boxGeometry args={[2.5, 0.4, 0.4]} />
+          <mesh position={[0, 1.8, 0]}>
+            <boxGeometry args={[3, 0.6, 0.6]} />
             <meshStandardMaterial color="#4ade80" />
           </mesh>
           {/* 중간 세로선 */}
-          <mesh position={[-1, 0, 0]}>
-            <boxGeometry args={[0.4, 1.5, 0.4]} />
+          <mesh position={[-1.2, 0, 0]}>
+            <boxGeometry args={[0.6, 1.8, 0.6]} />
             <meshStandardMaterial color="#22c55e" />
           </mesh>
           {/* 하단 가로선 */}
-          <mesh position={[0, -1.5, 0]}>
-            <boxGeometry args={[2.5, 0.4, 0.4]} />
+          <mesh position={[0, -1.8, 0]}>
+            <boxGeometry args={[3, 0.6, 0.6]} />
             <meshStandardMaterial color="#15803d" />
           </mesh>
-          {/* 외계인 눈 */}
-          <mesh position={[0, 1.5, 0.3]}>
-            <sphereGeometry args={[0.1, 8, 8]} />
-            <meshStandardMaterial color="#ffffff" />
-          </mesh>
-          <mesh position={[0, 1.5, 0.3]}>
-            <sphereGeometry args={[0.05, 8, 8]} />
-            <meshStandardMaterial color="#000000" />
-          </mesh>
+          <AlienEyes position={[0, 1.8, 0.4]} />
         </group>
       )}
 
-      {/* 숫자 6 - 원형 + 내부 곡선 */}
+      {/* 숫자 6 - 원형+내부 외계인 */}
       {currentNumber === 6 && (
         <group>
           {/* 외부 원 */}
-          <mesh position={[0, 0, 0]} onClick={onPartClick}>
-            <torusGeometry args={[1.8, 0.4, 16, 32]} />
+          <mesh position={[0, 0, 0]}>
+            <torusGeometry args={[2, 0.6, 16, 32]} />
             <meshStandardMaterial color="#4ade80" />
           </mesh>
           {/* 내부 곡선 (6의 특징) */}
-          <mesh position={[0, -0.5, 0]}>
-            <boxGeometry args={[1.2, 0.3, 0.3]} />
+          <mesh position={[0, -0.8, 0]}>
+            <boxGeometry args={[1.5, 0.4, 0.4]} />
             <meshStandardMaterial color="#22c55e" />
           </mesh>
-          {/* 외계인 눈 */}
-          <mesh position={[0, 0.5, 0.5]}>
-            <sphereGeometry args={[0.1, 8, 8]} />
-            <meshStandardMaterial color="#ffffff" />
-          </mesh>
-          <mesh position={[0, 0.5, 0.5]}>
-            <sphereGeometry args={[0.05, 8, 8]} />
-            <meshStandardMaterial color="#000000" />
-          </mesh>
+          <AlienEyes position={[0, 0.5, 0.8]} />
         </group>
       )}
 
-      {/* 숫자 7 - 상단 가로선 + 대각선 */}
+      {/* 숫자 7 - 상단+대각선 외계인 */}
       {currentNumber === 7 && (
         <group>
           {/* 상단 가로선 */}
-          <mesh position={[0, 1.5, 0]} onClick={onPartClick}>
-            <boxGeometry args={[2.5, 0.4, 0.4]} />
+          <mesh position={[0, 1.8, 0]}>
+            <boxGeometry args={[3, 0.6, 0.6]} />
             <meshStandardMaterial color="#4ade80" />
           </mesh>
           {/* 대각선 */}
-          <mesh position={[0.8, 0, 0]} rotation={[0, 0, -Math.PI / 4]}>
-            <boxGeometry args={[2.5, 0.4, 0.4]} />
+          <mesh position={[1, 0, 0]} rotation={[0, 0, -Math.PI / 4]}>
+            <boxGeometry args={[2.5, 0.6, 0.6]} />
             <meshStandardMaterial color="#22c55e" />
           </mesh>
-          {/* 외계인 눈 */}
-          <mesh position={[0, 1.5, 0.3]}>
-            <sphereGeometry args={[0.1, 8, 8]} />
-            <meshStandardMaterial color="#ffffff" />
-          </mesh>
-          <mesh position={[0, 1.5, 0.3]}>
-            <sphereGeometry args={[0.05, 8, 8]} />
-            <meshStandardMaterial color="#000000" />
-          </mesh>
+          <AlienEyes position={[0, 1.8, 0.4]} />
         </group>
       )}
 
-      {/* 숫자 8 - 두 개의 원 */}
+      {/* 숫자 8 - 두 원 외계인 */}
       {currentNumber === 8 && (
         <group>
           {/* 상단 원 */}
-          <mesh position={[0, 0.8, 0]} onClick={onPartClick}>
-            <torusGeometry args={[1.2, 0.3, 16, 32]} />
+          <mesh position={[0, 1, 0]}>
+            <torusGeometry args={[1.5, 0.5, 16, 32]} />
             <meshStandardMaterial color="#4ade80" />
           </mesh>
           {/* 하단 원 */}
-          <mesh position={[0, -0.8, 0]}>
-            <torusGeometry args={[1.2, 0.3, 16, 32]} />
+          <mesh position={[0, -1, 0]}>
+            <torusGeometry args={[1.5, 0.5, 16, 32]} />
             <meshStandardMaterial color="#22c55e" />
           </mesh>
-          {/* 외계인 눈 */}
-          <mesh position={[0, 0.8, 0.3]}>
-            <sphereGeometry args={[0.1, 8, 8]} />
-            <meshStandardMaterial color="#ffffff" />
-          </mesh>
-          <mesh position={[0, 0.8, 0.3]}>
-            <sphereGeometry args={[0.05, 8, 8]} />
-            <meshStandardMaterial color="#000000" />
-          </mesh>
+          <AlienEyes position={[0, 1, 0.4]} />
         </group>
       )}
 
-      {/* 숫자 9 - 원형 + 하단 직선 */}
+      {/* 숫자 9 - 원+직선 외계인 */}
       {currentNumber === 9 && (
         <group>
           {/* 상단 원 */}
-          <mesh position={[0, 0.5, 0]} onClick={onPartClick}>
-            <torusGeometry args={[1.5, 0.4, 16, 32]} />
+          <mesh position={[0, 0.8, 0]}>
+            <torusGeometry args={[1.8, 0.6, 16, 32]} />
             <meshStandardMaterial color="#4ade80" />
           </mesh>
           {/* 하단 직선 */}
-          <mesh position={[0, -1.2, 0]}>
-            <boxGeometry args={[0.4, 1, 0.4]} />
+          <mesh position={[0, -1.5, 0]}>
+            <boxGeometry args={[0.6, 1.2, 0.6]} />
             <meshStandardMaterial color="#22c55e" />
           </mesh>
-          {/* 외계인 눈 */}
-          <mesh position={[0, 0.5, 0.4]}>
-            <sphereGeometry args={[0.1, 8, 8]} />
-            <meshStandardMaterial color="#ffffff" />
-          </mesh>
-          <mesh position={[0, 0.5, 0.4]}>
-            <sphereGeometry args={[0.05, 8, 8]} />
-            <meshStandardMaterial color="#000000" />
-          </mesh>
+          <AlienEyes position={[0, 0.8, 0.6]} />
         </group>
       )}
 
       {/* 기본 모양 (숫자가 선택되지 않았을 때) */}
       {currentNumber === -1 && (
         <group>
-          {/* 기본 외계인 모양 */}
-          <mesh position={[0, 0, 0]} onClick={onPartClick}>
-            <boxGeometry args={[1.5, 2, 1]} />
-            <meshStandardMaterial color="#6b7280" />
+          {/* 기본 외계인 몸통 */}
+          <mesh position={[0, 0, 0]}>
+            <boxGeometry args={[1.8, 2.5, 1.2]} />
+            <meshStandardMaterial 
+              color="#6b7280" 
+              metalness={0.2}
+              roughness={0.6}
+            />
           </mesh>
-          {/* 외계인 눈 */}
-          <mesh position={[0, 0.5, 0.6]}>
-            <sphereGeometry args={[0.15, 8, 8]} />
-            <meshStandardMaterial color="#ffffff" />
+          {/* 외계인 팔 */}
+          <mesh position={[-1.2, 0.5, 0]}>
+            <boxGeometry args={[0.6, 1.5, 0.4]} />
+            <meshStandardMaterial color="#4b5563" />
           </mesh>
-          <mesh position={[0, 0.5, 0.6]}>
-            <sphereGeometry args={[0.08, 8, 8]} />
-            <meshStandardMaterial color="#000000" />
+          <mesh position={[1.2, 0.5, 0]}>
+            <boxGeometry args={[0.6, 1.5, 0.4]} />
+            <meshStandardMaterial color="#4b5563" />
           </mesh>
+          {/* 외계인 다리 */}
+          <mesh position={[-0.6, -1.5, 0]}>
+            <boxGeometry args={[0.4, 1.5, 0.4]} />
+            <meshStandardMaterial color="#4b5563" />
+          </mesh>
+          <mesh position={[0.6, -1.5, 0]}>
+            <boxGeometry args={[0.4, 1.5, 0.4]} />
+            <meshStandardMaterial color="#4b5563" />
+          </mesh>
+          <AlienEyes position={[0, 1, 0.8]} />
         </group>
       )}
     </group>
@@ -482,7 +475,8 @@ export default function AlienPlayPage() {
           }
 
           // 선택된 숫자가 정답과 일치하는지 확인
-          const isNumberCorrect = currentAlienNumber === currentProblemRef.current.answer;
+          const isNumberCorrect =
+            currentAlienNumber === currentProblemRef.current.answer;
 
           console.log("정답 체크:", {
             currentAlienNumber,
@@ -765,7 +759,8 @@ export default function AlienPlayPage() {
                     • <strong>프리셋 버튼:</strong> 0~9 숫자 모양으로 즉시 변신
                   </div>
                   <div>
-                    • <strong>터치 조정:</strong> 외계인을 터치해서 0~9 숫자 순환
+                    • <strong>터치 조정:</strong> 외계인을 터치해서 0~9 숫자
+                    순환
                   </div>
                   <div>
                     • <strong>자동 체크:</strong> 벽이 닿으면 자동으로 정답
