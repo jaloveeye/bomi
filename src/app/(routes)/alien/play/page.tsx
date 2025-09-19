@@ -78,304 +78,298 @@ function ApproachingWall({
   );
 }
 
-// 숫자 외계인 모델 컴포넌트 - 숫자 모양 자체를 3D로 표현
+// 숫자 외계인 모델 컴포넌트 - 각 숫자를 명확한 3D 모양으로 표현
 function AlienModel({
-  headShape,
-  bodyShape,
-  armShape,
-  legShape,
+  currentNumber,
   onPartClick,
 }: {
-  headShape: string;
-  bodyShape: string;
-  armShape: string;
-  legShape: string;
-  onPartClick: (part: string) => void;
+  currentNumber: number;
+  onPartClick: () => void;
 }) {
   return (
     <group>
-      {/* 숫자 0 */}
-      {headShape === "round" &&
-        bodyShape === "circle" &&
-        legShape === "circle" && (
-          <group>
-            {/* 0의 둥근 모양 */}
-            <mesh position={[0, 0, 0]} onClick={() => onPartClick("head")}>
-              <torusGeometry args={[1.5, 0.3, 16, 32]} />
-              <meshStandardMaterial color="#4ade80" />
-            </mesh>
-          </group>
-        )}
-
-      {/* 숫자 1 */}
-      {headShape === "tall" && bodyShape === "tall" && legShape === "tall" && (
+      {/* 숫자 0 - 둥근 원형 */}
+      {currentNumber === 0 && (
         <group>
-          {/* 1의 직선 모양 */}
-          <mesh position={[0, 0, 0]} onClick={() => onPartClick("head")}>
-            <boxGeometry args={[0.3, 4, 0.3]} />
+          <mesh position={[0, 0, 0]} onClick={onPartClick}>
+            <torusGeometry args={[1.8, 0.4, 16, 32]} />
             <meshStandardMaterial color="#4ade80" />
+          </mesh>
+          {/* 외계인 눈 */}
+          <mesh position={[0, 0.5, 0.5]}>
+            <sphereGeometry args={[0.1, 8, 8]} />
+            <meshStandardMaterial color="#ffffff" />
+          </mesh>
+          <mesh position={[0, 0.5, 0.5]}>
+            <sphereGeometry args={[0.05, 8, 8]} />
+            <meshStandardMaterial color="#000000" />
           </mesh>
         </group>
       )}
 
-      {/* 숫자 2 */}
-      {headShape === "round" &&
-        bodyShape === "wide" &&
-        armShape === "long" &&
-        legShape === "wide" && (
-          <group>
-            {/* 2의 곡선 모양 */}
-            <mesh position={[0, 1.5, 0]} onClick={() => onPartClick("head")}>
-              <boxGeometry args={[2, 0.3, 0.3]} />
-              <meshStandardMaterial color="#4ade80" />
-            </mesh>
-            <mesh position={[0, 0, 0]} onClick={() => onPartClick("body")}>
-              <boxGeometry args={[2, 0.3, 0.3]} />
-              <meshStandardMaterial color="#22c55e" />
-            </mesh>
-            <mesh position={[0, -1.5, 0]} onClick={() => onPartClick("leg")}>
-              <boxGeometry args={[2, 0.3, 0.3]} />
-              <meshStandardMaterial color="#15803d" />
-            </mesh>
-          </group>
-        )}
-
-      {/* 숫자 3 */}
-      {headShape === "round" && bodyShape === "tall" && legShape === "tall" && (
+      {/* 숫자 1 - 세로 직선 */}
+      {currentNumber === 1 && (
         <group>
-          {/* 3의 세로선 모양 */}
-          <mesh position={[0, 0, 0]} onClick={() => onPartClick("head")}>
-            <boxGeometry args={[0.3, 4, 0.3]} />
+          <mesh position={[0, 0, 0]} onClick={onPartClick}>
+            <boxGeometry args={[0.4, 4, 0.4]} />
             <meshStandardMaterial color="#4ade80" />
+          </mesh>
+          {/* 외계인 눈 */}
+          <mesh position={[0, 1.5, 0.3]}>
+            <sphereGeometry args={[0.1, 8, 8]} />
+            <meshStandardMaterial color="#ffffff" />
+          </mesh>
+          <mesh position={[0, 1.5, 0.3]}>
+            <sphereGeometry args={[0.05, 8, 8]} />
+            <meshStandardMaterial color="#000000" />
           </mesh>
         </group>
       )}
 
-      {/* 숫자 4 */}
-      {headShape === "tall" &&
-        bodyShape === "wide" &&
-        armShape === "long" &&
-        legShape === "tall" && (
-          <group>
-            {/* 4의 모양 */}
-            <mesh position={[0, 1.5, 0]} onClick={() => onPartClick("head")}>
-              <boxGeometry args={[0.3, 1, 0.3]} />
-              <meshStandardMaterial color="#4ade80" />
-            </mesh>
-            <mesh position={[0, 0, 0]} onClick={() => onPartClick("body")}>
-              <boxGeometry args={[2, 0.3, 0.3]} />
-              <meshStandardMaterial color="#22c55e" />
-            </mesh>
-            <mesh position={[0, -1.5, 0]} onClick={() => onPartClick("leg")}>
-              <boxGeometry args={[0.3, 1, 0.3]} />
-              <meshStandardMaterial color="#15803d" />
-            </mesh>
-          </group>
-        )}
-
-      {/* 숫자 5 */}
-      {headShape === "round" && bodyShape === "wide" && legShape === "wide" && (
+      {/* 숫자 2 - 곡선 모양 */}
+      {currentNumber === 2 && (
         <group>
-          {/* 5의 모양 */}
-          <mesh position={[0, 1.5, 0]} onClick={() => onPartClick("head")}>
-            <boxGeometry args={[2, 0.3, 0.3]} />
+          {/* 상단 곡선 */}
+          <mesh position={[0, 1.5, 0]} onClick={onPartClick}>
+            <boxGeometry args={[2.5, 0.4, 0.4]} />
             <meshStandardMaterial color="#4ade80" />
           </mesh>
-          <mesh position={[0, 0, 0]} onClick={() => onPartClick("body")}>
-            <boxGeometry args={[2, 0.3, 0.3]} />
+          {/* 중간 대각선 */}
+          <mesh position={[0.8, 0, 0]} rotation={[0, 0, Math.PI / 4]}>
+            <boxGeometry args={[1.5, 0.4, 0.4]} />
             <meshStandardMaterial color="#22c55e" />
           </mesh>
-          <mesh position={[0, -1.5, 0]} onClick={() => onPartClick("leg")}>
-            <boxGeometry args={[2, 0.3, 0.3]} />
+          {/* 하단 직선 */}
+          <mesh position={[0, -1.5, 0]}>
+            <boxGeometry args={[2.5, 0.4, 0.4]} />
             <meshStandardMaterial color="#15803d" />
           </mesh>
-        </group>
-      )}
-
-      {/* 숫자 6 */}
-      {headShape === "round" &&
-        bodyShape === "circle" &&
-        legShape === "circle" && (
-          <group>
-            {/* 6의 둥근 모양 */}
-            <mesh position={[0, 0, 0]} onClick={() => onPartClick("head")}>
-              <torusGeometry args={[1.5, 0.3, 16, 32]} />
-              <meshStandardMaterial color="#4ade80" />
-            </mesh>
-          </group>
-        )}
-
-      {/* 숫자 7 */}
-      {headShape === "tall" && bodyShape === "tall" && legShape === "tall" && (
-        <group>
-          {/* 7의 세로선 모양 */}
-          <mesh position={[0, 0, 0]} onClick={() => onPartClick("head")}>
-            <boxGeometry args={[0.3, 4, 0.3]} />
-            <meshStandardMaterial color="#4ade80" />
+          {/* 외계인 눈 */}
+          <mesh position={[0, 1.5, 0.3]}>
+            <sphereGeometry args={[0.1, 8, 8]} />
+            <meshStandardMaterial color="#ffffff" />
+          </mesh>
+          <mesh position={[0, 1.5, 0.3]}>
+            <sphereGeometry args={[0.05, 8, 8]} />
+            <meshStandardMaterial color="#000000" />
           </mesh>
         </group>
       )}
 
-      {/* 숫자 8 */}
-      {headShape === "round" &&
-        bodyShape === "circle" &&
-        legShape === "circle" && (
-          <group>
-            {/* 8의 두 원 모양 */}
-            <mesh position={[0, 0.8, 0]} onClick={() => onPartClick("head")}>
-              <torusGeometry args={[1, 0.3, 16, 32]} />
-              <meshStandardMaterial color="#4ade80" />
-            </mesh>
-            <mesh position={[0, -0.8, 0]} onClick={() => onPartClick("leg")}>
-              <torusGeometry args={[1, 0.3, 16, 32]} />
-              <meshStandardMaterial color="#15803d" />
-            </mesh>
-          </group>
-        )}
+      {/* 숫자 3 - 두 개의 곡선 */}
+      {currentNumber === 3 && (
+        <group>
+          {/* 상단 곡선 */}
+          <mesh position={[0, 1.2, 0]} onClick={onPartClick}>
+            <boxGeometry args={[2, 0.4, 0.4]} />
+            <meshStandardMaterial color="#4ade80" />
+          </mesh>
+          {/* 중간 곡선 */}
+          <mesh position={[0, 0, 0]}>
+            <boxGeometry args={[2, 0.4, 0.4]} />
+            <meshStandardMaterial color="#22c55e" />
+          </mesh>
+          {/* 하단 곡선 */}
+          <mesh position={[0, -1.2, 0]}>
+            <boxGeometry args={[2, 0.4, 0.4]} />
+            <meshStandardMaterial color="#15803d" />
+          </mesh>
+          {/* 외계인 눈 */}
+          <mesh position={[0, 1.2, 0.3]}>
+            <sphereGeometry args={[0.1, 8, 8]} />
+            <meshStandardMaterial color="#ffffff" />
+          </mesh>
+          <mesh position={[0, 1.2, 0.3]}>
+            <sphereGeometry args={[0.05, 8, 8]} />
+            <meshStandardMaterial color="#000000" />
+          </mesh>
+        </group>
+      )}
 
-      {/* 숫자 9 */}
-      {headShape === "round" &&
-        bodyShape === "circle" &&
-        legShape === "tall" && (
-          <group>
-            {/* 9의 모양 */}
-            <mesh position={[0, 0, 0]} onClick={() => onPartClick("head")}>
-              <torusGeometry args={[1.5, 0.3, 16, 32]} />
-              <meshStandardMaterial color="#4ade80" />
-            </mesh>
-            <mesh position={[0, -1.5, 0]} onClick={() => onPartClick("leg")}>
-              <boxGeometry args={[0.3, 1, 0.3]} />
-              <meshStandardMaterial color="#15803d" />
-            </mesh>
-          </group>
-        )}
+      {/* 숫자 4 - L자 모양 */}
+      {currentNumber === 4 && (
+        <group>
+          {/* 세로선 */}
+          <mesh position={[-0.8, 0, 0]} onClick={onPartClick}>
+            <boxGeometry args={[0.4, 3, 0.4]} />
+            <meshStandardMaterial color="#4ade80" />
+          </mesh>
+          {/* 가로선 */}
+          <mesh position={[0, 0, 0]}>
+            <boxGeometry args={[2, 0.4, 0.4]} />
+            <meshStandardMaterial color="#22c55e" />
+          </mesh>
+          {/* 대각선 */}
+          <mesh position={[0.8, 0, 0]} rotation={[0, 0, -Math.PI / 4]}>
+            <boxGeometry args={[1.5, 0.4, 0.4]} />
+            <meshStandardMaterial color="#15803d" />
+          </mesh>
+          {/* 외계인 눈 */}
+          <mesh position={[0, 1.5, 0.3]}>
+            <sphereGeometry args={[0.1, 8, 8]} />
+            <meshStandardMaterial color="#ffffff" />
+          </mesh>
+          <mesh position={[0, 1.5, 0.3]}>
+            <sphereGeometry args={[0.05, 8, 8]} />
+            <meshStandardMaterial color="#000000" />
+          </mesh>
+        </group>
+      )}
 
-      {/* 기본 모양 (아무것도 선택되지 않았을 때) */}
-      {!(
-        headShape === "round" &&
-        bodyShape === "circle" &&
-        legShape === "circle"
-      ) &&
-        !(
-          headShape === "tall" &&
-          bodyShape === "tall" &&
-          legShape === "tall"
-        ) &&
-        !(
-          headShape === "round" &&
-          bodyShape === "wide" &&
-          armShape === "long" &&
-          legShape === "wide"
-        ) &&
-        !(
-          headShape === "round" &&
-          bodyShape === "tall" &&
-          legShape === "tall"
-        ) &&
-        !(
-          headShape === "tall" &&
-          bodyShape === "wide" &&
-          armShape === "long" &&
-          legShape === "tall"
-        ) &&
-        !(
-          headShape === "round" &&
-          bodyShape === "wide" &&
-          legShape === "wide"
-        ) &&
-        !(
-          headShape === "tall" &&
-          bodyShape === "tall" &&
-          legShape === "tall"
-        ) &&
-        !(
-          headShape === "round" &&
-          bodyShape === "circle" &&
-          legShape === "circle"
-        ) &&
-        !(
-          headShape === "round" &&
-          bodyShape === "circle" &&
-          legShape === "tall"
-        ) && (
-          <group>
-            {/* 기본 외계인 모양 */}
-            <mesh position={[0, 0, 0]} onClick={() => onPartClick("head")}>
-              <boxGeometry args={[1, 1, 1]} />
-              <meshStandardMaterial color="#4ade80" />
-            </mesh>
-          </group>
-        )}
+      {/* 숫자 5 - 상단 가로선 + 하단 곡선 */}
+      {currentNumber === 5 && (
+        <group>
+          {/* 상단 가로선 */}
+          <mesh position={[0, 1.5, 0]} onClick={onPartClick}>
+            <boxGeometry args={[2.5, 0.4, 0.4]} />
+            <meshStandardMaterial color="#4ade80" />
+          </mesh>
+          {/* 중간 세로선 */}
+          <mesh position={[-1, 0, 0]}>
+            <boxGeometry args={[0.4, 1.5, 0.4]} />
+            <meshStandardMaterial color="#22c55e" />
+          </mesh>
+          {/* 하단 가로선 */}
+          <mesh position={[0, -1.5, 0]}>
+            <boxGeometry args={[2.5, 0.4, 0.4]} />
+            <meshStandardMaterial color="#15803d" />
+          </mesh>
+          {/* 외계인 눈 */}
+          <mesh position={[0, 1.5, 0.3]}>
+            <sphereGeometry args={[0.1, 8, 8]} />
+            <meshStandardMaterial color="#ffffff" />
+          </mesh>
+          <mesh position={[0, 1.5, 0.3]}>
+            <sphereGeometry args={[0.05, 8, 8]} />
+            <meshStandardMaterial color="#000000" />
+          </mesh>
+        </group>
+      )}
+
+      {/* 숫자 6 - 원형 + 내부 곡선 */}
+      {currentNumber === 6 && (
+        <group>
+          {/* 외부 원 */}
+          <mesh position={[0, 0, 0]} onClick={onPartClick}>
+            <torusGeometry args={[1.8, 0.4, 16, 32]} />
+            <meshStandardMaterial color="#4ade80" />
+          </mesh>
+          {/* 내부 곡선 (6의 특징) */}
+          <mesh position={[0, -0.5, 0]}>
+            <boxGeometry args={[1.2, 0.3, 0.3]} />
+            <meshStandardMaterial color="#22c55e" />
+          </mesh>
+          {/* 외계인 눈 */}
+          <mesh position={[0, 0.5, 0.5]}>
+            <sphereGeometry args={[0.1, 8, 8]} />
+            <meshStandardMaterial color="#ffffff" />
+          </mesh>
+          <mesh position={[0, 0.5, 0.5]}>
+            <sphereGeometry args={[0.05, 8, 8]} />
+            <meshStandardMaterial color="#000000" />
+          </mesh>
+        </group>
+      )}
+
+      {/* 숫자 7 - 상단 가로선 + 대각선 */}
+      {currentNumber === 7 && (
+        <group>
+          {/* 상단 가로선 */}
+          <mesh position={[0, 1.5, 0]} onClick={onPartClick}>
+            <boxGeometry args={[2.5, 0.4, 0.4]} />
+            <meshStandardMaterial color="#4ade80" />
+          </mesh>
+          {/* 대각선 */}
+          <mesh position={[0.8, 0, 0]} rotation={[0, 0, -Math.PI / 4]}>
+            <boxGeometry args={[2.5, 0.4, 0.4]} />
+            <meshStandardMaterial color="#22c55e" />
+          </mesh>
+          {/* 외계인 눈 */}
+          <mesh position={[0, 1.5, 0.3]}>
+            <sphereGeometry args={[0.1, 8, 8]} />
+            <meshStandardMaterial color="#ffffff" />
+          </mesh>
+          <mesh position={[0, 1.5, 0.3]}>
+            <sphereGeometry args={[0.05, 8, 8]} />
+            <meshStandardMaterial color="#000000" />
+          </mesh>
+        </group>
+      )}
+
+      {/* 숫자 8 - 두 개의 원 */}
+      {currentNumber === 8 && (
+        <group>
+          {/* 상단 원 */}
+          <mesh position={[0, 0.8, 0]} onClick={onPartClick}>
+            <torusGeometry args={[1.2, 0.3, 16, 32]} />
+            <meshStandardMaterial color="#4ade80" />
+          </mesh>
+          {/* 하단 원 */}
+          <mesh position={[0, -0.8, 0]}>
+            <torusGeometry args={[1.2, 0.3, 16, 32]} />
+            <meshStandardMaterial color="#22c55e" />
+          </mesh>
+          {/* 외계인 눈 */}
+          <mesh position={[0, 0.8, 0.3]}>
+            <sphereGeometry args={[0.1, 8, 8]} />
+            <meshStandardMaterial color="#ffffff" />
+          </mesh>
+          <mesh position={[0, 0.8, 0.3]}>
+            <sphereGeometry args={[0.05, 8, 8]} />
+            <meshStandardMaterial color="#000000" />
+          </mesh>
+        </group>
+      )}
+
+      {/* 숫자 9 - 원형 + 하단 직선 */}
+      {currentNumber === 9 && (
+        <group>
+          {/* 상단 원 */}
+          <mesh position={[0, 0.5, 0]} onClick={onPartClick}>
+            <torusGeometry args={[1.5, 0.4, 16, 32]} />
+            <meshStandardMaterial color="#4ade80" />
+          </mesh>
+          {/* 하단 직선 */}
+          <mesh position={[0, -1.2, 0]}>
+            <boxGeometry args={[0.4, 1, 0.4]} />
+            <meshStandardMaterial color="#22c55e" />
+          </mesh>
+          {/* 외계인 눈 */}
+          <mesh position={[0, 0.5, 0.4]}>
+            <sphereGeometry args={[0.1, 8, 8]} />
+            <meshStandardMaterial color="#ffffff" />
+          </mesh>
+          <mesh position={[0, 0.5, 0.4]}>
+            <sphereGeometry args={[0.05, 8, 8]} />
+            <meshStandardMaterial color="#000000" />
+          </mesh>
+        </group>
+      )}
+
+      {/* 기본 모양 (숫자가 선택되지 않았을 때) */}
+      {currentNumber === -1 && (
+        <group>
+          {/* 기본 외계인 모양 */}
+          <mesh position={[0, 0, 0]} onClick={onPartClick}>
+            <boxGeometry args={[1.5, 2, 1]} />
+            <meshStandardMaterial color="#6b7280" />
+          </mesh>
+          {/* 외계인 눈 */}
+          <mesh position={[0, 0.5, 0.6]}>
+            <sphereGeometry args={[0.15, 8, 8]} />
+            <meshStandardMaterial color="#ffffff" />
+          </mesh>
+          <mesh position={[0, 0.5, 0.6]}>
+            <sphereGeometry args={[0.08, 8, 8]} />
+            <meshStandardMaterial color="#000000" />
+          </mesh>
+        </group>
+      )}
     </group>
   );
 }
 
-// 숫자 프리셋 정의 - 각 숫자의 특징적인 모양
-const numberPresets: Record<
-  number,
-  { headShape: string; bodyShape: string; armShape: string; legShape: string }
-> = {
-  0: {
-    headShape: "round", // 둥근 머리
-    bodyShape: "circle", // 원형 몸통 (0의 둥근 모양)
-    armShape: "short", // 짧은 팔
-    legShape: "circle", // 원형 다리
-  },
-  1: {
-    headShape: "tall", // 세로 긴 머리
-    bodyShape: "tall", // 세로 긴 몸통 (1의 직선 모양)
-    armShape: "short", // 짧은 팔
-    legShape: "tall", // 세로 긴 다리
-  },
-  2: {
-    headShape: "round", // 둥근 머리
-    bodyShape: "wide", // 넓은 몸통 (2의 곡선)
-    armShape: "long", // 긴 팔 (2의 상단 곡선)
-    legShape: "wide", // 넓은 다리 (2의 하단 곡선)
-  },
-  3: {
-    headShape: "round", // 둥근 머리
-    bodyShape: "tall", // 세로 긴 몸통 (3의 세로선)
-    armShape: "short", // 짧은 팔
-    legShape: "tall", // 세로 긴 다리
-  },
-  4: {
-    headShape: "tall", // 세로 긴 머리
-    bodyShape: "wide", // 넓은 몸통 (4의 가로선)
-    armShape: "long", // 긴 팔 (4의 대각선)
-    legShape: "tall", // 세로 긴 다리
-  },
-  5: {
-    headShape: "round", // 둥근 머리
-    bodyShape: "wide", // 넓은 몸통 (5의 상단 가로선)
-    armShape: "short", // 짧은 팔
-    legShape: "wide", // 넓은 다리 (5의 하단 가로선)
-  },
-  6: {
-    headShape: "round", // 둥근 머리
-    bodyShape: "circle", // 원형 몸통 (6의 둥근 모양)
-    armShape: "short", // 짧은 팔
-    legShape: "circle", // 원형 다리
-  },
-  7: {
-    headShape: "tall", // 세로 긴 머리
-    bodyShape: "tall", // 세로 긴 몸통 (7의 세로선)
-    armShape: "short", // 짧은 팔
-    legShape: "tall", // 세로 긴 다리
-  },
-  8: {
-    headShape: "round", // 둥근 머리
-    bodyShape: "circle", // 원형 몸통 (8의 두 원)
-    armShape: "short", // 짧은 팔
-    legShape: "circle", // 원형 다리
-  },
-  9: {
-    headShape: "round", // 둥근 머리
-    bodyShape: "circle", // 원형 몸통 (9의 둥근 모양)
-    armShape: "short", // 짧은 팔
-    legShape: "tall", // 세로 긴 다리 (9의 하단 직선)
-  },
-};
+// 숫자 프리셋은 더 이상 필요하지 않음 - 직접 숫자 사용
 
 // 수학 문제 생성
 function generateMathProblem() {
@@ -416,8 +410,7 @@ function generateMathProblem() {
 
 export default function AlienPlayPage() {
   const [currentProblem, setCurrentProblem] = useState(generateMathProblem());
-  const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
-  const [alienShape, setAlienShape] = useState(numberPresets[0]);
+  const [currentNumber, setCurrentNumber] = useState(-1); // -1은 기본 모양, 0-9는 해당 숫자
   const [score, setScore] = useState(0);
   const [totalQuestions, setTotalQuestions] = useState(0);
   const [showFeedback, setShowFeedback] = useState(false);
@@ -434,7 +427,7 @@ export default function AlienPlayPage() {
   const [isAnswerCorrect, setIsAnswerCorrect] = useState(false); // 정답 여부 추적
 
   // 최신 상태를 참조하기 위한 ref
-  const alienShapeRef = useRef(alienShape);
+  const currentNumberRef = useRef(currentNumber);
   const currentProblemRef = useRef(currentProblem);
   const totalQuestionsRef = useRef(totalQuestions);
   const scoreRef = useRef(score);
@@ -442,8 +435,8 @@ export default function AlienPlayPage() {
 
   // ref 업데이트
   useEffect(() => {
-    alienShapeRef.current = alienShape;
-  }, [alienShape]);
+    currentNumberRef.current = currentNumber;
+  }, [currentNumber]);
 
   useEffect(() => {
     currentProblemRef.current = currentProblem;
@@ -461,8 +454,7 @@ export default function AlienPlayPage() {
     isAnswerCorrectRef.current = isAnswerCorrect;
   }, [isAnswerCorrect]);
 
-  const { handleCorrectAnswer, handleIncorrectAnswer, checkPerfectScore } =
-    useLevelSystem();
+  const { handleCorrectAnswer, checkPerfectScore } = useLevelSystem();
 
   // 시간 제한 및 벽 움직임 관리
   useEffect(() => {
@@ -474,46 +466,31 @@ export default function AlienPlayPage() {
         // 벽이 외계인 위치(Z=0)에 도달하면 충돌 체크 (한 번만)
         if (newPosition >= 0 && prev < 0) {
           console.log("충돌 체크 시작!", { newPosition, prev });
-          const currentAlienShape = alienShapeRef.current;
-          const defaultShape = numberPresets[0];
+          const currentAlienNumber = currentNumberRef.current;
 
-          // 외계인이 기본 모양(0번)인지 확인
-          const isDefaultShape =
-            currentAlienShape.headShape === defaultShape.headShape &&
-            currentAlienShape.bodyShape === defaultShape.bodyShape &&
-            currentAlienShape.armShape === defaultShape.armShape &&
-            currentAlienShape.legShape === defaultShape.legShape;
-
-          console.log("외계인 모양 체크:", {
-            currentAlienShape,
-            defaultShape,
-            isDefaultShape,
+          console.log("외계인 숫자 체크:", {
+            currentAlienNumber,
+            answer: currentProblemRef.current.answer,
           });
 
-          // 기본 모양이면 정답 체크하지 않고 시간 초과만 체크
-          if (isDefaultShape) {
+          // 기본 모양(-1)이면 정답 체크하지 않고 시간 초과만 체크
+          if (currentAlienNumber === -1) {
             console.log("기본 모양 - 시간 초과!");
             setGameOverReason("timeout");
             setGameOver(true);
             return 0; // 벽이 멈춘 위치 (시간 초과로 처리됨)
           }
 
-          // 선택된 모양이면 정답 여부 확인
-          const correctShape = numberPresets[currentProblemRef.current.answer];
-          const isShapeCorrect =
-            currentAlienShape.headShape === correctShape.headShape &&
-            currentAlienShape.bodyShape === correctShape.bodyShape &&
-            currentAlienShape.armShape === correctShape.armShape &&
-            currentAlienShape.legShape === correctShape.legShape;
+          // 선택된 숫자가 정답과 일치하는지 확인
+          const isNumberCorrect = currentAlienNumber === currentProblemRef.current.answer;
 
           console.log("정답 체크:", {
-            currentAlienShape,
-            correctShape,
-            isShapeCorrect,
+            currentAlienNumber,
             answer: currentProblemRef.current.answer,
+            isNumberCorrect,
           });
 
-          if (isShapeCorrect) {
+          if (isNumberCorrect) {
             // 정답이면 벽이 통과하고 다음 문제로
             setIsAnswerCorrect(true); // 정답 상태 설정
             handleCorrectAnswer("alien_transform", "easy");
@@ -535,7 +512,7 @@ export default function AlienPlayPage() {
               } else {
                 console.log("다음 문제로 진행");
                 setCurrentProblem(generateMathProblem());
-                setAlienShape(numberPresets[0]);
+                setCurrentNumber(-1); // 기본 모양으로 리셋
                 setTimeLeft(10);
                 setWallPosition(-15);
                 setIsAnswerCorrect(false); // 정답 상태 리셋
@@ -577,47 +554,19 @@ export default function AlienPlayPage() {
     checkPerfectScore,
   ]);
 
-  // 외계인 부위 클릭 핸들러 - 다양한 모양 옵션 지원
-  const handlePartClick = (part: string) => {
-    setAlienShape((prev) => {
-      const newShape = { ...prev };
-      switch (part) {
-        case "head":
-          // round -> tall -> flat -> round 순환
-          if (newShape.headShape === "round") newShape.headShape = "tall";
-          else if (newShape.headShape === "tall") newShape.headShape = "flat";
-          else if (newShape.headShape === "flat") newShape.headShape = "round";
-          else newShape.headShape = "round";
-          break;
-        case "body":
-          // wide -> tall -> circle -> wide 순환
-          if (newShape.bodyShape === "wide") newShape.bodyShape = "tall";
-          else if (newShape.bodyShape === "tall") newShape.bodyShape = "circle";
-          else if (newShape.bodyShape === "circle") newShape.bodyShape = "wide";
-          else newShape.bodyShape = "wide";
-          break;
-        case "arm":
-          // short -> long -> wide -> short 순환
-          if (newShape.armShape === "short") newShape.armShape = "long";
-          else if (newShape.armShape === "long") newShape.armShape = "wide";
-          else if (newShape.armShape === "wide") newShape.armShape = "short";
-          else newShape.armShape = "short";
-          break;
-        case "leg":
-          // wide -> tall -> circle -> wide 순환
-          if (newShape.legShape === "wide") newShape.legShape = "tall";
-          else if (newShape.legShape === "tall") newShape.legShape = "circle";
-          else if (newShape.legShape === "circle") newShape.legShape = "wide";
-          else newShape.legShape = "wide";
-          break;
-      }
-      return newShape;
+  // 외계인 부위 클릭 핸들러 - 숫자 순환
+  const handlePartClick = () => {
+    setCurrentNumber((prev) => {
+      // 0-9 순환, -1은 기본 모양
+      if (prev === -1) return 0;
+      if (prev === 9) return 0;
+      return prev + 1;
     });
   };
 
   // 프리셋 적용
   const applyPreset = (number: number) => {
-    setAlienShape(numberPresets[number]);
+    setCurrentNumber(number);
   };
 
   // 정답 확인 함수는 더 이상 필요하지 않음 (충돌 시 자동으로 체크됨)
@@ -625,8 +574,7 @@ export default function AlienPlayPage() {
   // 게임 재시작
   const restartGame = () => {
     setCurrentProblem(generateMathProblem());
-    setSelectedAnswer(null);
-    setAlienShape(numberPresets[0]);
+    setCurrentNumber(-1); // 기본 모양으로 리셋
     setScore(0);
     setTotalQuestions(0);
     setShowFeedback(false);
@@ -716,10 +664,7 @@ export default function AlienPlayPage() {
 
             {/* 외계인 모델 */}
             <AlienModel
-              headShape={alienShape.headShape}
-              bodyShape={alienShape.bodyShape}
-              armShape={alienShape.armShape}
-              legShape={alienShape.legShape}
+              currentNumber={currentNumber}
               onPartClick={handlePartClick}
             />
 
@@ -820,8 +765,7 @@ export default function AlienPlayPage() {
                     • <strong>프리셋 버튼:</strong> 0~9 숫자 모양으로 즉시 변신
                   </div>
                   <div>
-                    • <strong>터치 조정:</strong> 각 부위를 터치해서 세부 모양
-                    변경
+                    • <strong>터치 조정:</strong> 외계인을 터치해서 0~9 숫자 순환
                   </div>
                   <div>
                     • <strong>자동 체크:</strong> 벽이 닿으면 자동으로 정답
