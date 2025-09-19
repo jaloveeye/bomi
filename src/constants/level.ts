@@ -237,6 +237,42 @@ export const ACHIEVEMENTS: Achievement[] = [
     },
     unlocked: false,
   },
+  {
+    id: "alien_transform_master",
+    name: "외계인 변신 마스터",
+    description: "외계인 변신 게임을 30번 완주했어요!",
+    emoji: "👽",
+    condition: {
+      type: "correct_answers",
+      value: 30,
+      gameType: "alien_transform",
+    },
+    unlocked: false,
+  },
+  {
+    id: "shape_master",
+    name: "모양의 달인",
+    description: "외계인을 10가지 숫자 모양으로 변신시켰어요!",
+    emoji: "🔮",
+    condition: {
+      type: "games_completed",
+      value: 50,
+      gameType: "alien_transform",
+    },
+    unlocked: false,
+  },
+  {
+    id: "space_explorer",
+    name: "우주 탐험가",
+    description: "3D 공간에서 외계인과 함께 수학을 배웠어요!",
+    emoji: "🚀",
+    condition: {
+      type: "correct_answers",
+      value: 100,
+      gameType: "alien_transform",
+    },
+    unlocked: false,
+  },
 ];
 
 // 경험치 계산
